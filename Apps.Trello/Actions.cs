@@ -70,7 +70,7 @@ namespace Apps.Trello
         }
 
         [Action("Create card", Description = "Create card on board")]
-        public BaseResponse CreateCard(string apiKey, AuthenticationCredentialsProvider authenticationCredentialsProvider,
+        public void CreateCard(string apiKey, AuthenticationCredentialsProvider authenticationCredentialsProvider,
             [ActionParameter] CreateCardRequest input)
         {
             TrelloAuthorization.Default.AppKey = apiKey;
@@ -78,26 +78,16 @@ namespace Apps.Trello
             var board = GetBoardData(input.BoardId);
             board.Lists.Refresh().Wait();
             board.Lists.First(l => l.Id == input.ListId).Cards.Add(input.CardName, input.CardDescription, Position.Top).Wait();
-
-            return new BaseResponse()
-            {
-                Details = "New card was created"
-            };
         }
 
         [Action("Create list", Description = "Create list on board")]
-        public BaseResponse CreateList(string apiKey, AuthenticationCredentialsProvider authenticationCredentialsProvider,
+        public void CreateList(string apiKey, AuthenticationCredentialsProvider authenticationCredentialsProvider,
             [ActionParameter] CreateListRequest input)
         {
             TrelloAuthorization.Default.AppKey = apiKey;
             TrelloAuthorization.Default.UserToken = authenticationCredentialsProvider.Value;
             var board = GetBoardData(input.BoardId);
             board.Lists.Add(input.ListName, Position.Bottom);
-            
-            return new BaseResponse()
-            {
-                Details = "New list was created"
-            };
         }
 
         private Board GetBoardData(string boardId)
