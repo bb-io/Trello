@@ -5,6 +5,7 @@ using Apps.Trello.Models.Responses;
 using Apps.Trello.Dtos;
 using Manatee.Trello;
 using System;
+using Blackbird.Applications.Sdk.Common.Actions;
 
 namespace Apps.Trello
 {
@@ -12,11 +13,10 @@ namespace Apps.Trello
     public class Actions
     {
         [Action("Get board", Description = "Get board details by id")]
-        public GetBoardResponse GetBoardById(string apiKey, AuthenticationCredentialsProvider authenticationCredentialsProvider, 
+        public GetBoardResponse GetBoardById(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, 
             [ActionParameter] GetBoardRequest input)
         {
-            TrelloAuthorization.Default.AppKey = apiKey;
-            TrelloAuthorization.Default.UserToken = authenticationCredentialsProvider.Value;
+            ConnectToTrello(authenticationCredentialsProviders);
             var board = GetBoardData(input.BoardId);
             return new GetBoardResponse()
             {
@@ -28,11 +28,10 @@ namespace Apps.Trello
         }
 
         [Action("Get board cards", Description = "Get board cards")]
-        public GetBoardCardsResponse GetBoardCards(string apiKey, AuthenticationCredentialsProvider authenticationCredentialsProvider,
+        public GetBoardCardsResponse GetBoardCards(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
             [ActionParameter] GetBoardRequest input)
         {
-            TrelloAuthorization.Default.AppKey = apiKey;
-            TrelloAuthorization.Default.UserToken = authenticationCredentialsProvider.Value;
+            ConnectToTrello(authenticationCredentialsProviders);
             var board = GetBoardData(input.BoardId);
             board.Cards.Refresh().Wait();
             var cards = board.Cards.Select(c => new CardDto()
@@ -50,11 +49,10 @@ namespace Apps.Trello
         }
 
         [Action("Get board lists", Description = "Get board lists")]
-        public GetBoardListsResponse GetBoardLists(string apiKey, AuthenticationCredentialsProvider authenticationCredentialsProvider,
+        public GetBoardListsResponse GetBoardLists(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
             [ActionParameter] GetBoardRequest input)
         {
-            TrelloAuthorization.Default.AppKey = apiKey;
-            TrelloAuthorization.Default.UserToken = authenticationCredentialsProvider.Value;
+            ConnectToTrello(authenticationCredentialsProviders);
             var board = GetBoardData(input.BoardId);
             board.Lists.Refresh().Wait();
             var lists = board.Lists.Select(l => new ListDto()
@@ -70,22 +68,20 @@ namespace Apps.Trello
         }
 
         [Action("Create card", Description = "Create card on board")]
-        public void CreateCard(string apiKey, AuthenticationCredentialsProvider authenticationCredentialsProvider,
+        public void CreateCard(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
             [ActionParameter] CreateCardRequest input)
         {
-            TrelloAuthorization.Default.AppKey = apiKey;
-            TrelloAuthorization.Default.UserToken = authenticationCredentialsProvider.Value;
+            ConnectToTrello(authenticationCredentialsProviders);
             var board = GetBoardData(input.BoardId);
             board.Lists.Refresh().Wait();
             board.Lists.First(l => l.Id == input.ListId).Cards.Add(input.CardName, input.CardDescription, Position.Top).Wait();
         }
 
         [Action("Create list", Description = "Create list on board")]
-        public void CreateList(string apiKey, AuthenticationCredentialsProvider authenticationCredentialsProvider,
+        public void CreateList(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
             [ActionParameter] CreateListRequest input)
         {
-            TrelloAuthorization.Default.AppKey = apiKey;
-            TrelloAuthorization.Default.UserToken = authenticationCredentialsProvider.Value;
+            ConnectToTrello(authenticationCredentialsProviders);
             var board = GetBoardData(input.BoardId);
             board.Lists.Add(input.ListName, Position.Bottom);
         }
@@ -95,6 +91,12 @@ namespace Apps.Trello
             var board = new Board(boardId);
             board.Refresh().Wait();
             return board;
+        }
+
+        private void ConnectToTrello(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders)
+        {
+            TrelloAuthorization.Default.AppKey = authenticationCredentialsProviders.First(p => p.KeyName == "apiKey").Value;
+            TrelloAuthorization.Default.UserToken = authenticationCredentialsProviders.First(p => p.KeyName == "userToken").Value;
         }
     }
 }
