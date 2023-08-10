@@ -95,8 +95,8 @@ namespace Apps.Trello
 
         private void ConnectToTrello(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders)
         {
-            TrelloAuthorization.Default.AppKey = authenticationCredentialsProviders.First(p => p.KeyName == "apiKey").Value;
-            TrelloAuthorization.Default.UserToken = authenticationCredentialsProviders.First(p => p.KeyName == "userToken").Value;
+            TrelloAuthorization.Default.AppKey = authenticationCredentialsProviders.First(p => p.KeyName == "API Key").Value;
+            TrelloAuthorization.Default.UserToken = authenticationCredentialsProviders.First(p => p.KeyName == "User token").Value;
         }
     }
 }

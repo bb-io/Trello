@@ -19,22 +19,22 @@ namespace Apps.Trello.Connections
                 ConnectionUsage = ConnectionUsage.Actions,
                 ConnectionProperties = new List<ConnectionProperty>()
                 {
-                    new ConnectionProperty("apiKey"),
-                    new ConnectionProperty("userToken")
+                    new ConnectionProperty("API Key"),
+                    new ConnectionProperty("User token")
                 }
             }
         };
 
         public IEnumerable<AuthenticationCredentialsProvider> CreateAuthorizationCredentialsProviders(Dictionary<string, string> values)
         {
-            var apiKey = values.First(v => v.Key == "apiKey");
+            var apiKey = values.First(v => v.Key == "API Key");
             yield return new AuthenticationCredentialsProvider(
                 AuthenticationCredentialsRequestLocation.None,
                 apiKey.Key,
                 apiKey.Value
             );
 
-            var userToken = values.First(v => v.Key == "userToken");
+            var userToken = values.First(v => v.Key == "User token");
             yield return new AuthenticationCredentialsProvider(
                 AuthenticationCredentialsRequestLocation.None,
                 userToken.Key,
