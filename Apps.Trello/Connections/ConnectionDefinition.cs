@@ -1,45 +1,41 @@
-﻿using Blackbird.Applications.Sdk.Common.Authentication;
+﻿using Apps.Trello.Constants;
+using Blackbird.Applications.Sdk.Common.Authentication;
 using Blackbird.Applications.Sdk.Common.Connections;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Apps.Trello.Connections
+namespace Apps.Trello.Connections;
+
+public class ConnectionDefinition : IConnectionDefinition
 {
-    public class ConnectionDefinition : IConnectionDefinition
+    public IEnumerable<ConnectionPropertyGroup> ConnectionPropertyGroups => new List<ConnectionPropertyGroup>
     {
-        public IEnumerable<ConnectionPropertyGroup> ConnectionPropertyGroups => new List<ConnectionPropertyGroup>()
+        new()
         {
-            new ConnectionPropertyGroup
+            Name = "Developer API key",
+            AuthenticationType = ConnectionAuthenticationType.Undefined,
+            ConnectionUsage = ConnectionUsage.Actions,
+            ConnectionProperties = new List<ConnectionProperty>
             {
-                Name = "Developer API key",
-                AuthenticationType = ConnectionAuthenticationType.Undefined,
-                ConnectionUsage = ConnectionUsage.Actions,
-                ConnectionProperties = new List<ConnectionProperty>()
-                {
-                    new ConnectionProperty("API Key"),
-                    new ConnectionProperty("User token")
-                }
+                new(CredsNames.ApiKey) { DisplayName = "API key" },
+                new(CredsNames.UserToken) { DisplayName = "User token" }
             }
-        };
-
-        public IEnumerable<AuthenticationCredentialsProvider> CreateAuthorizationCredentialsProviders(Dictionary<string, string> values)
-        {
-            var apiKey = values.First(v => v.Key == "API Key");
-            yield return new AuthenticationCredentialsProvider(
-                AuthenticationCredentialsRequestLocation.None,
-                apiKey.Key,
-                apiKey.Value
-            );
-
-            var userToken = values.First(v => v.Key == "User token");
-            yield return new AuthenticationCredentialsProvider(
-                AuthenticationCredentialsRequestLocation.None,
-                userToken.Key,
-                userToken.Value
-            );
         }
+    };
+
+    public IEnumerable<AuthenticationCredentialsProvider> CreateAuthorizationCredentialsProviders(
+        Dictionary<string, string> values)
+    {
+        var apiKey = values.First(v => v.Key == CredsNames.ApiKey);
+        yield return new(
+            AuthenticationCredentialsRequestLocation.None,
+            apiKey.Key,
+            apiKey.Value
+        );
+
+        var userToken = values.First(v => v.Key == CredsNames.UserToken);
+        yield return new(
+            AuthenticationCredentialsRequestLocation.None,
+            userToken.Key,
+            userToken.Value
+        );
     }
 }
