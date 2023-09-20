@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Blackbird.Applications.Sdk.Utils" Version="1.0.10" />
+    <PackageReference Include="Blackbird.Applications.Sdk.Utils" Version="1.0.11" />
     <PackageReference Include="Manatee.Trello" Version="4.4.3" />
   </ItemGroup>
 
