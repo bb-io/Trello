@@ -1,44 +1,46 @@
-﻿using Blackbird.Applications.Sdk.Common.Authentication;
+﻿using Apps.Trello.Extensions;
+using Apps.Trello.Models.Requests.Board;
+using Blackbird.Applications.Sdk.Common.Authentication;
+using Blackbird.Applications.Sdk.Common.Webhooks;
 using Blackbird.Applications.Sdk.Utils.Webhooks.Bridge;
 using Blackbird.Applications.Sdk.Utils.Webhooks.Bridge.Models.Request;
 using Manatee.Trello;
 
 namespace Apps.Trello.Webhooks.Handlers.Base;
 
-public abstract class TrelloWebhookHandler<T> : BridgeWebhookHandler where T : class, ICanWebhook
+public abstract class TrelloWebhookHandler : IWebhookEventHandler
 {
     protected abstract string Event { get; }
-    private T Entity { get; }
-    
+
+    private ICanWebhook Entity { get; }
     private TrelloFactory Client { get; }
-    
-    protected TrelloWebhookHandler(T entity)
+
+    protected TrelloWebhookHandler([WebhookParameter] BoardRequest input)
     {
         Client = new();
-        Entity = entity;
+        Entity = new Board(input.BoardId);
     }
-    
-    public override async Task SubscribeAsync(
+
+    public async Task SubscribeAsync(
         IEnumerable<AuthenticationCredentialsProvider> creds,
         Dictionary<string, string> values)
     {
-        await base.SubscribeAsync(creds, values);
+        var (webhookData, bridgeCreds) = await GetBridgeServiceInputs(values);
+        await BridgeService.Subscribe(webhookData, bridgeCreds);
 
-        await Client.Webhook(Entity, ApplicationConstants.BridgeServiceUrl);
+        await Client.Webhook(Entity, ApplicationConstants.BridgeServiceUrl, null, creds.GetAuth());
     }
 
-    public override async Task UnsubscribeAsync(
+    public async Task UnsubscribeAsync(
         IEnumerable<AuthenticationCredentialsProvider> creds,
         Dictionary<string, string> values)
     {
-        await base.UnsubscribeAsync(creds, values);
-
-        var webhook = await Client.Webhook(Entity, ApplicationConstants.BridgeServiceUrl);
-        await webhook.Delete();
+        var (webhookData, bridgeCreds) = await GetBridgeServiceInputs(values);
+        await BridgeService.Unsubscribe(webhookData, bridgeCreds);
     }
-    
-    protected override Task<(BridgeRequest, BridgeCredentials)> GetBridgeServiceInputs(
-        Dictionary<string, string> values, IEnumerable<AuthenticationCredentialsProvider> creds)
+
+    private Task<(BridgeRequest, BridgeCredentials)> GetBridgeServiceInputs(
+        Dictionary<string, string> values)
     {
         var webhookData = new BridgeRequest()
         {

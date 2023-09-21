@@ -59,7 +59,32 @@ public class CardActions : TrelloActions
 
         return new(card);
     }
+    
+    [Action("Update card", Description = "Update specific card")]
+    public async Task<CardEntity> UpdateCard(
+        [ActionParameter] CardRequest card,
+        [ActionParameter] UpdateCardRequest input)
+    {
+        var result = new Card(card.CardId)
+        {
+            Name = input.Name,
+            Description = input.Description,
+            IsComplete = input.IsComplete,
+            IsArchived = input.IsArchived,
+        };
 
+        if (input.ListId is not null)
+        {
+            var list = new List(input.ListId);
+            await list.Refresh();
+            
+            result.List = list;
+        }
+
+        await result.Refresh();
+        return new(result);
+    }
+    
     [Action("Delete card", Description = "Delete specific card")]
     public Task DeleteCard([ActionParameter] CardRequest input)
         => new Card(input.CardId).Delete();

@@ -4,11 +4,11 @@ using Blackbird.Applications.Sdk.Common.Webhooks;
 
 namespace Apps.Trello.Webhooks.Handlers.Cards;
 
-public class CardCreatedHandler : TrelloWebhookHandler
+public class CardRenamedHandler : TrelloWebhookHandler
 {
-    protected override string Event => "action_create_card";
+    protected override string Event => "action_renamed_card";
     
-    public CardCreatedHandler([WebhookParameter] BoardRequest input) : base(input)
+    public CardRenamedHandler([WebhookParameter] BoardRequest input) : base(input)
     {
     }
 }
