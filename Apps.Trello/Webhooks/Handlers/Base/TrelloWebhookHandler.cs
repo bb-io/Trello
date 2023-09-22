@@ -1,5 +1,4 @@
 ﻿using Apps.Trello.Extensions;
-using Apps.Trello.Models.Requests.Board;
 using Blackbird.Applications.Sdk.Common.Authentication;
 using Blackbird.Applications.Sdk.Common.Webhooks;
 using Blackbird.Applications.Sdk.Utils.Webhooks.Bridge;
@@ -12,41 +11,45 @@ public abstract class TrelloWebhookHandler : IWebhookEventHandler
 {
     protected abstract string Event { get; }
 
-    private ICanWebhook Entity { get; }
     private TrelloFactory Client { get; }
 
-    protected TrelloWebhookHandler([WebhookParameter] BoardRequest input)
+    protected TrelloWebhookHandler()
     {
         Client = new();
-        Entity = new Board(input.BoardId);
     }
 
     public async Task SubscribeAsync(
         IEnumerable<AuthenticationCredentialsProvider> creds,
         Dictionary<string, string> values)
     {
-        var (webhookData, bridgeCreds) = await GetBridgeServiceInputs(values);
+        var auth = creds.GetAuth();
+        var me = await Client.Me(auth);
+
+        var (webhookData, bridgeCreds) = await GetBridgeServiceInputs(values, me.Id);
         await BridgeService.Subscribe(webhookData, bridgeCreds);
 
-        await Client.Webhook(Entity, ApplicationConstants.BridgeServiceUrl, null, creds.GetAuth());
+        await Client.Webhook(me, ApplicationConstants.BridgeServiceUrl, null, auth);
     }
 
     public async Task UnsubscribeAsync(
         IEnumerable<AuthenticationCredentialsProvider> creds,
         Dictionary<string, string> values)
     {
-        var (webhookData, bridgeCreds) = await GetBridgeServiceInputs(values);
+        var auth = creds.GetAuth();
+        var me = await Client.Me(auth);
+
+        var (webhookData, bridgeCreds) = await GetBridgeServiceInputs(values, me.Id);
         await BridgeService.Unsubscribe(webhookData, bridgeCreds);
     }
 
-    private Task<(BridgeRequest, BridgeCredentials)> GetBridgeServiceInputs(
-        Dictionary<string, string> values)
+    private Task<(BridgeRequest, BridgeCredentials)> GetBridgeServiceInputs(Dictionary<string, string> values,
+        string meId)
     {
         var webhookData = new BridgeRequest()
         {
             Url = values["payloadUrl"],
             Event = Event,
-            Id = Entity.Id
+            Id = meId
         };
 
         var bridgeCreds = new BridgeCredentials()
