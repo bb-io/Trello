@@ -4,6 +4,10 @@
     <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <Product>Blackbird Trello</Product>
+    <Version>1.0.0</Version>
+    <Description>Kanban-style lists</Description>
+    <AssemblyName>Apps.Trello</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
