@@ -354,5 +354,3 @@ healthchecksdb
 *.DS_Store
 *.dmg
 *.env
-/Apps.Trello/ApplicationConstants.cs
-

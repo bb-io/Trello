@@ -1,5 +1,7 @@
 ﻿using Apps.Trello.Extensions;
+using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Authentication;
+using Blackbird.Applications.Sdk.Common.Invocation;
 using Blackbird.Applications.Sdk.Common.Webhooks;
 using Blackbird.Applications.Sdk.Utils.Webhooks.Bridge;
 using Blackbird.Applications.Sdk.Utils.Webhooks.Bridge.Models.Request;
@@ -7,13 +9,14 @@ using Manatee.Trello;
 
 namespace Apps.Trello.Webhooks.Handlers.Base;
 
-public abstract class TrelloWebhookHandler : IWebhookEventHandler
+public abstract class TrelloWebhookHandler : BaseInvocable, IWebhookEventHandler
 {
     protected abstract string Event { get; }
 
     private TrelloFactory Client { get; }
+    private string BridgeServiceUrl => $"{InvocationContext.UriInfo.BridgeServiceUrl}/webhooks/trello";
 
-    protected TrelloWebhookHandler()
+    protected TrelloWebhookHandler(InvocationContext invocationContext) : base(invocationContext)
     {
         Client = new();
     }
@@ -28,7 +31,7 @@ public abstract class TrelloWebhookHandler : IWebhookEventHandler
         var (webhookData, bridgeCreds) = await GetBridgeServiceInputs(values, me.Id);
         await BridgeService.Subscribe(webhookData, bridgeCreds);
 
-        await Client.Webhook(me, ApplicationConstants.BridgeServiceUrl, null, auth);
+        await Client.Webhook(me, BridgeServiceUrl, null, auth);
     }
 
     public async Task UnsubscribeAsync(
@@ -54,7 +57,7 @@ public abstract class TrelloWebhookHandler : IWebhookEventHandler
 
         var bridgeCreds = new BridgeCredentials()
         {
-            ServiceUrl = ApplicationConstants.BridgeServiceUrl,
+            ServiceUrl = BridgeServiceUrl,
             Token = ApplicationConstants.BlackbirdToken
         };
 
