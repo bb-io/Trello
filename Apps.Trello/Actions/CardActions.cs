@@ -2,6 +2,7 @@
 using Apps.Trello.Models.Entities;
 using Apps.Trello.Models.Requests.Board;
 using Apps.Trello.Models.Requests.Card;
+using Apps.Trello.Models.Requests.List;
 using Apps.Trello.Models.Responses.Card;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
@@ -44,17 +45,20 @@ public class CardActions : TrelloActions
     {
         var card = new Card(input.CardId);
         await card.Refresh();
-
+        await card.List.Refresh();
+        
         return new(card);
     }
 
     [Action("Create card", Description = "Create card on board")]
-    public async Task<CardEntity> CreateCard([ActionParameter] CreateCardRequest input)
+    public async Task<CardEntity> CreateCard(
+        [ActionParameter] ListRequest list,
+        [ActionParameter] CreateCardRequest input)
     {
-        var board = await GetBoardData(input.BoardId);
+        var board = await GetBoardData(list.BoardId);
         await board.Lists.Refresh();
 
-        var card = await board.Lists.First(l => l.Id == input.ListId).Cards
+        var card = await board.Lists.First(l => l.Id == list.ListId).Cards
             .Add(input.CardName, input.CardDescription, Position.Top, input.DueDate);
 
         return new(card);
@@ -62,7 +66,7 @@ public class CardActions : TrelloActions
     
     [Action("Update card", Description = "Update specific card")]
     public async Task<CardEntity> UpdateCard(
-        [ActionParameter] CardRequest card,
+        [ActionParameter] ListCardRequest card,
         [ActionParameter] UpdateCardRequest input)
     {
         var result = new Card(card.CardId)
@@ -73,9 +77,9 @@ public class CardActions : TrelloActions
             IsArchived = input.IsArchived,
         };
 
-        if (input.ListId is not null)
+        if (card.ListId is not null)
         {
-            var list = new List(input.ListId);
+            var list = new List(card.ListId);
             await list.Refresh();
             
             result.List = list;
