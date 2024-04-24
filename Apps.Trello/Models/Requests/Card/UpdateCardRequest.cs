@@ -12,7 +12,4 @@ public class UpdateCardRequest
     
     [Display("Is archived")]
     public bool? IsArchived { get; set; }
-    
-    [Display("List ID")]
-    public string? ListId { get; set; }
 }

@@ -40,7 +40,7 @@ public class BoardActions : TrelloActions
     }    
     
     [Action("Create board", Description = "Create a new board")]
-    public async Task<BoardEntity> CreateBoard([ActionParameter] CreateBoardRequest input)
+    public async Task<CreateBoardResponse> CreateBoard([ActionParameter] CreateBoardRequest input)
     {
         var me = await Client.Me();
         var board = await me.Boards.Add(input.Name, input.Description);
