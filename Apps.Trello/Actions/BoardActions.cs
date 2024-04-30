@@ -53,6 +53,22 @@ public class BoardActions : TrelloActions
     {
         var board = await GetBoardData(input.BoardId);
         return new(board);
+    }     
+    
+    [Action("Update board", Description = "Update board details")]
+    public Task UpdateBoard(
+        [ActionParameter] BoardRequest board,
+        [ActionParameter] UpdateBoardRequest input)
+    {
+        var updateBoard = new Board(board.BoardId)
+        {
+            Name = input.Name,
+            Description = input.Description,
+            IsClosed = input.IsClosed,
+            IsSubscribed = input.IsSubscribed,
+        };
+
+        return updateBoard.Refresh();
     }    
     
     [Action("Delete board", Description = "Delete specific board")]

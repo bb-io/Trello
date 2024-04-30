@@ -75,6 +75,7 @@ public class CardActions : TrelloActions
             Description = input.Description,
             IsComplete = input.IsComplete,
             IsArchived = input.IsArchived,
+            DueDate = input.DueDate,
         };
 
         if (card.ListId is not null)
