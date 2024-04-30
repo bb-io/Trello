@@ -25,7 +25,7 @@ public class CardActions : TrelloActions
         await board.Cards.Refresh();
 
         var cards = board.Cards.Select(c => new CardEntity(c)).ToArray();
-
+        
         return new(cards);
     }
     

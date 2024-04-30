@@ -4,7 +4,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Product>Trello</Product>
-    <Version>1.1.0</Version>
+    <Version>1.1.1</Version>
     <Description>Kanban-style lists</Description>
     <AssemblyName>Apps.Trello</AssemblyName>
   </PropertyGroup>
@@ -14,6 +14,6 @@
     <PackageReference Include="Manatee.Trello" Version="4.4.3" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource CopyToOutputDirectory="Always" Include="image\icon.png"/>
+    <EmbeddedResource CopyToOutputDirectory="Always" Include="image\icon.png" />
   </ItemGroup>
 </Project>
