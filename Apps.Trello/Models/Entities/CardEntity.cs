@@ -22,6 +22,9 @@ public class CardEntity
 
     [Display("URL")] public string Url { get; set; }
 
+    [Display("Checklists")]
+    public IEnumerable<ChecklistEntity> Lists { get; set; }
+
     public CardEntity(ICard card)
     {
         Id = card.Id;
@@ -32,5 +35,6 @@ public class CardEntity
         Position = card.Position.ToString();
         Url = card.Url;
         ListName = card.List.Name;
+        Lists = card.CheckLists.Select(x => new ChecklistEntity(x));
     }
 }

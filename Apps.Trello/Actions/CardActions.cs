@@ -25,7 +25,7 @@ public class CardActions : TrelloActions
         await board.Cards.Refresh();
 
         var cards = board.Cards.Select(c => new CardEntity(c)).ToArray();
-
+        
         return new(cards);
     }
     
@@ -75,6 +75,7 @@ public class CardActions : TrelloActions
             Description = input.Description,
             IsComplete = input.IsComplete,
             IsArchived = input.IsArchived,
+            DueDate = input.DueDate,
         };
 
         if (card.ListId is not null)
