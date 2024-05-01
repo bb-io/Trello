@@ -8,6 +8,6 @@ namespace Apps.Trello.Models.Requests.Checklist
         public string ChecklistID { get; set; }
 
         [Display("Check item name")]
-        public  string ItemName { get; set; }
+        public string ItemName { get; set; }
     }
 }

@@ -1,6 +1,6 @@
-﻿
-
+﻿using Apps.Trello.DataSourceHandlers.Static;
 using Blackbird.Applications.Sdk.Common;
+using Blackbird.Applications.Sdk.Common.Dictionaries;
 using Manatee.Trello;
 
 namespace Apps.Trello.Models.Requests.Checklist
@@ -17,7 +17,8 @@ namespace Apps.Trello.Models.Requests.Checklist
         public string? Name { get; set; }
 
         [Display("Check Item State")]
-        public CheckItemState State { get; set; }
+        [StaticDataSource(typeof(CheckitemStateDataHandler))]
+        public string State { get; set; }
 
     }
 }

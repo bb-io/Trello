@@ -41,7 +41,7 @@ namespace Apps.Trello.Actions
             await card.Refresh();
             var checklist = card.CheckLists.First(x => iteminfo.ChecklistID == x.Id);
             var item = checklist.CheckItems.First(x => iteminfo.CheckItemID == x.Id);
-            item.State = iteminfo.State ;
+            item.State = iteminfo.State == "Complete" ? CheckItemState.Complete : CheckItemState.Incomplete;
             item.Name = String.IsNullOrEmpty(iteminfo.Name) ? item.Name : iteminfo.Name ;
             await item.Refresh();
             return new(item);
