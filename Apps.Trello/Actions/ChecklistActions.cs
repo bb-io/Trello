@@ -26,11 +26,11 @@ namespace Apps.Trello.Actions
         }
 
         [Action("Get card checklist", Description = "Gets a specific checklist from a card")]
-        public async Task<ChecklistEntity> GetCardChecklist([ActionParameter] CardRequest input, [ActionParameter] GetChecklistRequest checklist)
+        public async Task<ChecklistEntity> GetCardChecklist([ActionParameter] CardRequest card, [ActionParameter] GetChecklistRequest input)
         {
-            var card = new Card(input.CardId);
-            await card.Refresh();
-            return new ChecklistEntity(card.CheckLists.First(x => checklist.ChecklistID == x.Id));
+            var chk =new CheckList(input.ChecklistID);
+            await chk.Refresh();
+            return new ChecklistEntity(chk);
         }
 
         [Action("Update checklist item", Description = "Update checklist item")]
@@ -48,12 +48,11 @@ namespace Apps.Trello.Actions
         }
 
         [Action("Search checklist item", Description = "Gets a specific checklist item from a card")]
-        public async Task<CheckitemEntity> GetCardChecklist([ActionParameter] CardRequest input, [ActionParameter] SearchItemRequest itemInfo)
+        public async Task<CheckitemEntity> SearchItem([ActionParameter] CardRequest card, [ActionParameter] SearchItemRequest input)
         {
-            var card = new Card(input.CardId);
-            await card.Refresh();
-            var List = card.CheckLists.First(x => itemInfo.ChecklistID == x.Id);
-            return new CheckitemEntity(List.CheckItems.First(x => x.Name == itemInfo.ItemName));
+            var chk = new CheckList(input.ChecklistID);
+            await chk.Refresh();
+            return new CheckitemEntity(chk.CheckItems.First(x => x.Name == input.ItemName));
         }
     }
 }
