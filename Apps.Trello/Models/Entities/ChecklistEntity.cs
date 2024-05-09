@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using CheckItemState = Apps.Trello.Models.Dtos.CheckItemState;
 
 namespace Apps.Trello.Models.Entities
 {
@@ -24,6 +25,5 @@ namespace Apps.Trello.Models.Entities
             Name = list.Name;
             CheckItems = list.CheckItems.Select(x => new CheckitemEntity(x));
         }
-
     }
 }
