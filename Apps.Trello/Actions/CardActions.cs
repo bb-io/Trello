@@ -12,27 +12,25 @@ using Manatee.Trello;
 namespace Apps.Trello.Actions;
 
 [ActionList]
-public class CardActions : TrelloActions
+public class CardActions(InvocationContext invocationContext) : TrelloActions(invocationContext)
 {
-    public CardActions(InvocationContext invocationContext) : base(invocationContext)
-    {
-    }
-
     [Action("List cards", Description = "List all board cards")]
-    public async Task<ListCardsResponse> ListCards([ActionParameter] BoardRequest input)
+    public async Task<ListCardsResponse> ListCards([ActionParameter] BoardCardsFilterRequest input)
     {
         var board = await GetBoardData(input.BoardId);
+        board.Cards.Limit = input.Limit ?? 100;
         await board.Cards.Refresh();
 
         var cards = board.Cards.Select(c => new CardEntity(c)).ToArray();
-        
         return new(cards);
     }
     
     [Action("List assigned cards", Description = "List all cards assigned to the user")]
-    public async Task<ListCardsResponse> ListUserCards()
+    public async Task<ListCardsResponse> ListUserCards([ActionParameter] CardFilterRequest request)
     {
         var me = await Client.Me();
+        me.Cards.Limit = request.Limit ?? 100;
+        
         await me.Cards.Refresh();
 
         var cards = me.Cards.Select(c => new CardEntity(c)).ToArray();

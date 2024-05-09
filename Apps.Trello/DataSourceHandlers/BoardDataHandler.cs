@@ -4,12 +4,9 @@ using Blackbird.Applications.Sdk.Common.Invocation;
 
 namespace Apps.Trello.DataSourceHandlers;
 
-public class BoardDataHandler : TrelloInvocable, IAsyncDataSourceHandler
+public class BoardDataHandler(InvocationContext invocationContext)
+    : TrelloInvocable(invocationContext), IAsyncDataSourceHandler
 {
-    public BoardDataHandler(InvocationContext invocationContext) : base(invocationContext)
-    {
-    }
-
     public async Task<Dictionary<string, string>> GetDataAsync(DataSourceContext context,
         CancellationToken cancellationToken)
     {
