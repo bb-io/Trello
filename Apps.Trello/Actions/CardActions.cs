@@ -7,7 +7,9 @@ using Apps.Trello.Models.Responses.Card;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
 using Blackbird.Applications.Sdk.Common.Invocation;
+using Blackbird.Applications.Sdk.Utils.Extensions.System;
 using Manatee.Trello;
+using System.Collections.Generic;
 
 namespace Apps.Trello.Actions;
 
@@ -47,6 +49,24 @@ public class CardActions(InvocationContext invocationContext) : TrelloActions(in
         
         return new(card);
     }
+
+    [Action("Copy card", Description = "Creates a new card based on another one")]
+    public async Task<CardEntity> CopyCard([ActionParameter] CopyCardRequest input, [ActionParameter] ListRequest list)
+    {
+        var card = new Card(input.CardId);
+        await card.Refresh();
+        await card.List.Refresh();
+
+        var board = await GetBoardData(list.BoardId);
+        await board.Lists.Refresh();
+
+        var CopyOptions = input.GetCopyOptions();
+
+        var newcard = await board.Lists.First(l => l.Id == list.ListId).Cards.Add(card, CopyOptions);
+
+        return new(card);
+    }
+
 
     [Action("Create card", Description = "Create card on board")]
     public async Task<CardEntity> CreateCard(
