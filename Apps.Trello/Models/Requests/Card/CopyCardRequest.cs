@@ -17,37 +17,37 @@ namespace Apps.Trello.Models.Requests.Card
         public string CardId { get; set; }
 
         [Display("Copy Attachments?")]
-        public bool? CopyAttachments { get; set; } = false;
+        public bool? CopyAttachments { get; set; }
 
         [Display("Copy Checklists?")]
-        public bool? CopyChecklists { get; set; } = false;
+        public bool? CopyChecklists { get; set; } 
 
         [Display("Copy Comments?")]
-        public bool? CopyComments { get; set; } = false;
+        public bool? CopyComments { get; set; }
 
         [Display("Copy Due?")]
-        public bool? CopyDue { get; set; } = false;
+        public bool? CopyDue { get; set; }
 
         [Display("Copy Labels?")]
-        public bool? CopyLabels { get; set; } = false;
+        public bool? CopyLabels { get; set; }
 
         [Display("Copy Members?")]
-        public bool? CopyMembers { get; set; } = false;
+        public bool? CopyMembers { get; set; }
 
         [Display("Copy Stickers?")]
-        public bool? CopyStickers { get; set; } = false;
+        public bool? CopyStickers { get; set; }
 
         public CardCopyKeepFromSourceOptions GetCopyOptions()
         {
             var Options = new CardCopyKeepFromSourceOptions();
 
-            if ((bool)CopyAttachments) Options |= CardCopyKeepFromSourceOptions.Attachments;
-            if ((bool)CopyChecklists) Options |= CardCopyKeepFromSourceOptions.Checklists;
-            if ((bool)CopyComments) Options |= CardCopyKeepFromSourceOptions.Comments;
-            if ((bool)CopyDue) Options |= CardCopyKeepFromSourceOptions.Due;
-            if ((bool)CopyLabels) Options |= CardCopyKeepFromSourceOptions.Labels;
-            if ((bool)CopyMembers) Options |= CardCopyKeepFromSourceOptions.Members;
-            if ((bool)CopyStickers) Options |= CardCopyKeepFromSourceOptions.Stickers;
+            if (CopyAttachments.GetValueOrDefault(false)) Options |= CardCopyKeepFromSourceOptions.Attachments;
+            if (CopyChecklists.GetValueOrDefault(false)) Options |= CardCopyKeepFromSourceOptions.Checklists;
+            if (CopyComments.GetValueOrDefault(false)) Options |= CardCopyKeepFromSourceOptions.Comments;
+            if (CopyDue.GetValueOrDefault(false)) Options |= CardCopyKeepFromSourceOptions.Due;
+            if (CopyLabels.GetValueOrDefault(false)) Options |= CardCopyKeepFromSourceOptions.Labels;
+            if (CopyMembers.GetValueOrDefault(false)) Options |= CardCopyKeepFromSourceOptions.Members;
+            if (CopyStickers.GetValueOrDefault(false)) Options |= CardCopyKeepFromSourceOptions.Stickers;
 
             return Options;
             

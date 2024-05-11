@@ -51,7 +51,7 @@ public class CardActions(InvocationContext invocationContext) : TrelloActions(in
     }
 
     [Action("Copy card", Description = "Creates a new card based on another one")]
-    public async Task<CardEntity> CopyCard([ActionParameter] CopyCardRequest input, [ActionParameter] ListRequest list)
+    public async Task<CardEntity> CopyCard([ActionParameter] ListRequest list, [ActionParameter] CopyCardRequest input)
     {
         var card = new Card(input.CardId);
         await card.Refresh();
@@ -64,7 +64,7 @@ public class CardActions(InvocationContext invocationContext) : TrelloActions(in
 
         var newcard = await board.Lists.First(l => l.Id == list.ListId).Cards.Add(card, CopyOptions);
 
-        return new(card);
+        return new(newcard);
     }
 
 
