@@ -93,7 +93,7 @@ public class CardActions(InvocationContext invocationContext) : TrelloActions(in
             Description = input.Description,
             IsComplete = input.IsComplete,
             IsArchived = input.IsArchived,
-            DueDate = input.DueDate,
+            DueDate = input.DueDate
         };
 
         if (card.ListId is not null)
