@@ -23,7 +23,7 @@ namespace Apps.Trello.Actions
             await card.Refresh();
             await card.Board.CustomFields.Refresh();
 
-            var updateField = await card.CustomFields.FirstOrDefault(x => x.Id == CustomField.CustomFieldId).Definition.SetValueForCard(card,CustomField.Text);
+            var updateField = await card.CustomFields.FirstOrDefault(x => x.Definition.Id == CustomField.CustomFieldId).Definition.SetValueForCard(card,CustomField.Text);
             await card.Refresh();
 
             return new(updateField);
@@ -36,7 +36,7 @@ namespace Apps.Trello.Actions
             await card.Refresh();
             await card.Board.CustomFields.Refresh();
 
-            var updateField = await card.CustomFields.FirstOrDefault(x => x.Id == CustomField.CustomFieldId).Definition.SetValueForCard(card, CustomField.Number);
+            var updateField = await card.CustomFields.FirstOrDefault(x => x.Definition.Id == CustomField.CustomFieldId).Definition.SetValueForCard(card, CustomField.Number);
             await card.Refresh();
 
             return new(updateField);
@@ -49,20 +49,20 @@ namespace Apps.Trello.Actions
             await card.Refresh();
             await card.Board.CustomFields.Refresh();
 
-            var updateField = await card.CustomFields.FirstOrDefault(x => x.Id == CustomField.CustomFieldId).Definition.SetValueForCard(card, CustomField.Date);
+            var updateField = await card.CustomFields.FirstOrDefault(x => x.Definition.Id == CustomField.CustomFieldId).Definition.SetValueForCard(card, CustomField.Date);
             await card.Refresh();
 
             return new(updateField);
         }
 
-        [Action("Set card dropdown custom field", Description = "Update the numeric value of a custom field in a card")]
+        [Action("Set card dropdown custom field", Description = "Update the dropdown value of a custom field in a card")]
         public async Task<CustomFieldEntity> SetDropdownCustomfield([ActionParameter] CardRequest input, [ActionParameter] SetDropdownCustomFieldRequest CustomField)
         {
             var card = new Card(input.CardId);
             await card.Refresh();
             await card.Board.CustomFields.Refresh();
-            var option = card.CustomFields.FirstOrDefault(x => x.Id == CustomField.CustomFieldId).Definition.Options.First(x => x.Id == CustomField.OptionId);
-            var updateField = await card.CustomFields.FirstOrDefault(x => x.Id == CustomField.CustomFieldId).Definition.SetValueForCard(card, option);
+            var option = card.CustomFields.FirstOrDefault(x => x.Definition.Id == CustomField.CustomFieldId).Definition.Options.First(x => x.Id == CustomField.OptionId);
+            var updateField = await card.CustomFields.FirstOrDefault(x => x.Definition.Id == CustomField.CustomFieldId).Definition.SetValueForCard(card, option);
             await card.Refresh();
 
             return new(updateField);
@@ -86,7 +86,7 @@ namespace Apps.Trello.Actions
             await card.Refresh();
             await card.Board.CustomFields.Refresh();
 
-            var result = card.CustomFields.FirstOrDefault(x => x.Id == CustomField.CustomFieldId);
+            var result = card.CustomFields.FirstOrDefault(x => x.Definition.Id == CustomField.CustomFieldId);
             return result is null ? "" : Regex.Match(result.ToString(), @"- (.*?)$").Groups[1].Value;
         }
 
@@ -97,7 +97,7 @@ namespace Apps.Trello.Actions
             await card.Refresh();
             await card.Board.CustomFields.Refresh();
 
-            var result = card.CustomFields.FirstOrDefault(x => x.Id == CustomField.CustomFieldId);
+            var result = card.CustomFields.FirstOrDefault(x => x.Definition.Id == CustomField.CustomFieldId);
             return result is null ? null : double.Parse(Regex.Match(result.ToString(), @"- (.*?)$").Groups[1].Value);
         }
 
@@ -108,7 +108,7 @@ namespace Apps.Trello.Actions
             await card.Refresh();
             await card.Board.CustomFields.Refresh();
 
-            var result = card.CustomFields.FirstOrDefault(x => x.Id == CustomField.CustomFieldId);
+            var result = card.CustomFields.FirstOrDefault(x => x.Definition.Id == CustomField.CustomFieldId);
             return result is null ? null : DateTime.Parse(Regex.Match(result.ToString(), @"- (.*?)$").Groups[1].Value);
         }
 
