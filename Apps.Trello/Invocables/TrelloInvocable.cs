@@ -9,7 +9,7 @@ namespace Apps.Trello.Invocables;
 
 public class TrelloInvocable : BaseInvocable
 {
-    private AuthenticationCredentialsProvider[] Creds =>
+    protected AuthenticationCredentialsProvider[] Creds =>
         InvocationContext.AuthenticationCredentialsProviders.ToArray();
     
     protected TrelloFactory Client { get; }

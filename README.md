@@ -54,6 +54,7 @@ To get your Api key and user token:
 ### Cards
 
 - **Create card** Create card on board
+- **Copy card** Creates a new card based on another one. Choose Board, Card to copy and List where to place the new card, and, optionally, which items to copy into the new card (attachments, checklists, stickers, etc.)
 - **Delete card** Delete specific card
 - **Get card** Get specific card details
 - **List assigned cards** List all cards assigned to the user
@@ -64,6 +65,24 @@ To get your Api key and user token:
 
 - **Create list** Create list on board
 - **Get lists** Get all board lists
+
+### Checklists
+
+- **Get card checklist**  Gets a specific checklist from a card
+- **List card checklists**  Lists all checklists in a card
+- **Search checklist item**  Gets a specific checklist item from a card
+- **Update checklist item**  Update checklist item
+
+### Custom Fields
+
+- **List card custom fields** Get all custom field details of a specific card as text
+- **Get date custom field value** Get the datetime value of a specific custom field on a card
+- **Get number custom field value** Get the numeric value of a specific custom field on a card
+- **Get text custom field value** Get the text value of a specific custom field on a card
+- **Set card date custom field** Update the date value of a custom field in a card
+- **Set card dropdown custom field** Update the dropdown value of a custom field in a card
+- **Set card number custom field** Update the numeric value of a custom field in a card
+- **Set card text custom field** Update the value of a text custom field in a card
 
 ## Events
 
