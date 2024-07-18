@@ -31,7 +31,7 @@ public class CardEntity
         Id = card.Id;
         Name = card.Name;
         Description = card.Description;
-        CreationDate = DateTime.SpecifyKind(card.CreationDate, DateTimeKind.Utc);
+        CreationDate = DateTime.SpecifyKind(card.CreationDate, DateTimeKind.Local);
         LastActivity = card.LastActivity;
         Position = card.Position.ToString();
         Url = card.Url;
