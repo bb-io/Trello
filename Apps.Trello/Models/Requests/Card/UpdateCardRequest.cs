@@ -13,4 +13,6 @@ public class UpdateCardRequest
     [Display("Is archived")] public bool? IsArchived { get; set; }
 
     [Display("Due date")] public DateTime? DueDate { get; set; }
+
+    public string? Comment { get; set; }
 }
