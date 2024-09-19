@@ -125,6 +125,7 @@ public class CardActions(InvocationContext invocationContext) : TrelloActions(in
         Emoji emoji = GetInputEmoji(input.Reaction);
 
         var card = new Card(input.CardId);
+        await card.Comments.Refresh();
         await card.Comments.First(x => x.Data.Text == input.textComment).Reactions.Add(emoji);
         await card.Refresh();
         await card.List.Refresh();
