@@ -57,6 +57,8 @@ To get your Api key and user token:
 - **Copy card** Creates a new card based on another one. Choose Board, Card to copy and List where to place the new card, and, optionally, which items to copy into the new card (attachments, checklists, stickers, etc.)
 - **Delete card** Delete specific card
 - **Get card** Get specific card details
+- **Search cards** Add optional filters to get matching cards from a board
+- **Find card** Get first matching card by name or url
 - **List assigned cards** List all cards assigned to the user
 - **List cards** List all board cards
 - **Update card** Update specific card
