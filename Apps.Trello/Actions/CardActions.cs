@@ -75,8 +75,8 @@ public class CardActions(InvocationContext invocationContext) : TrelloActions(in
         var card = String.IsNullOrEmpty(input.Name) ? 
             String.IsNullOrEmpty(input.Url) ?
             throw new Exception("Either card name or url need to be specified") 
-            : board.Cards.First(x => x.Url == input.Url) 
-            : board.Cards.First(x => x.Name == input.Name);
+            : board.Cards.FirstOrDefault(x => x.Url == input.Url) 
+            : board.Cards.FirstOrDefault(x => x.Name == input.Name);
         
         return new(card);
     }
