@@ -1,7 +1,6 @@
 ﻿using Apps.Trello.DataSourceHandlers.Static;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Dictionaries;
-using Manatee.Trello;
 
 namespace Apps.Trello.Models.Requests.Card
 {

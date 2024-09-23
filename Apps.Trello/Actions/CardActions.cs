@@ -40,12 +40,56 @@ public class CardActions(InvocationContext invocationContext) : TrelloActions(in
         return new(cards);
     }
 
+    [Action("Search cards", Description = "Search board cards")]
+    public async Task<List<CardEntity>> SearchCards([ActionParameter] SearchCardsRequest input)
+    {
+        var board = await GetBoardData(input.BoardId);
+        await board.Cards.Refresh();
+        var cards = board.Cards.Select(c => new CardEntity(c)).ToList();
+        if (!String.IsNullOrEmpty(input.Name))
+        { cards = cards.Where(x => x.Name == input.Name).ToList(); }
+        if (!String.IsNullOrEmpty(input.Description))
+        { cards = cards.Where(x => x.Description.Contains(input.Description)).ToList(); }
+        if (input.CreatedDateFrom != null)
+        { cards = cards.Where(x => x.CreationDate >= input.CreatedDateFrom).ToList(); }
+        if (input.CreatedDateTo != null)
+        { cards = cards.Where(x => x.CreationDate <= input.CreatedDateTo).ToList(); }
+        if (input.ActivityDateFrom != null)
+        { cards = cards.Where(x => x.LastActivity >= input.ActivityDateFrom).ToList(); }
+        if (input.ActivityDateTo != null)
+        { cards = cards.Where(x => x.LastActivity <= input.ActivityDateTo).ToList(); }
+
+        return new(cards);
+    }
+
+    [Action("Find card", Description = "Find a card by name or url")]
+    public async Task<CardEntity> FindCard([ActionParameter] FindCardRequest input)
+    {
+        
+        if (String.IsNullOrEmpty(input.Name) && String.IsNullOrEmpty(input.Url))
+        {
+            throw new Exception("Either card name or url need to be specified");
+        }
+        var board = await GetBoardData(input.BoardId);
+        await board.Cards.Refresh();
+        var card = String.IsNullOrEmpty(input.Name) ? 
+            String.IsNullOrEmpty(input.Url) ?
+            throw new Exception("Either card name or url need to be specified") 
+            : board.Cards.FirstOrDefault(x => x.Url == input.Url) 
+            : board.Cards.FirstOrDefault(x => x.Name == input.Name);
+        
+        return new(card);
+    }
+
     [Action("Get card", Description = "Get specific card details")]
-    public async Task<CardEntity> GetCard([ActionParameter] CardRequest input)
+    public async Task<GetCardResponse> GetCard([ActionParameter] CardRequest input)
     {
         var card = new Card(input.CardId);
         await card.Refresh();
         await card.List.Refresh();
+        await card.Attachments.Refresh();
+        await card.Comments.Refresh();
+        await card.CheckLists.Refresh();
         
         return new(card);
     }
@@ -135,6 +179,7 @@ public class CardActions(InvocationContext invocationContext) : TrelloActions(in
 
     private Emoji GetInputEmoji(string reaction)
     {
+        #region EmojiList
         var reactions = new Dictionary<string, Emoji>
         {
             { "Grinning", Emojis.Grinning },
@@ -2551,7 +2596,7 @@ public class CardActions(InvocationContext invocationContext) : TrelloActions(in
             { "FlagScotland", Emojis.FlagScotland },
             { "FlagWales", Emojis.FlagWales }
         };
-
+        #endregion
         return reactions[reaction];
     }
 }
