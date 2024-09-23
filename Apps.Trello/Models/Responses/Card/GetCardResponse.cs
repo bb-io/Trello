@@ -43,6 +43,7 @@ namespace Apps.Trello.Models.Responses.Card
             Checklists = card.CheckLists is null ? new List<ICheckList>() : card.CheckLists.ToList();
             Comments = card.Comments is null ? new List<string>() : card.Comments.Select(x => x.Data.Text).ToList();
             Attachments = card.Attachments is null ? new List<IAttachment>() : card.Attachments.ToList();
+            Position = (int)card.Position;
             ListName = card.List.Name;
             ListID = card.List.Id;
             Description = card.Description;
