@@ -91,7 +91,7 @@ public class CardActions(InvocationContext invocationContext) : TrelloActions(in
         await card.Comments.Refresh();
         await card.CheckLists.Refresh();
         
-        return new(card);
+        return new GetCardResponse(card);
     }
 
     [Action("Copy card", Description = "Creates a new card based on another one")]
