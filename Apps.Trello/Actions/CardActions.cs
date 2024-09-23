@@ -59,7 +59,7 @@ public class CardActions(InvocationContext invocationContext) : TrelloActions(in
         if (input.ActivityDateTo != null)
         { cards = cards.Where(x => x.LastActivity <= input.ActivityDateTo).ToList(); }
 
-        return new(cards);
+        return cards;
     }
 
     [Action("Find card", Description = "Find a card by name or url")]
@@ -82,7 +82,7 @@ public class CardActions(InvocationContext invocationContext) : TrelloActions(in
     }
 
     [Action("Get card", Description = "Get specific card details")]
-    public static async Task<GetCardResponse> GetCard([ActionParameter] CardRequest input)
+    public async Task<GetCardResponse> GetCard([ActionParameter] CardRequest input)
     {
         var card = new Card(input.CardId);
         await card.Refresh();
