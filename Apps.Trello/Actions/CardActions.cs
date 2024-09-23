@@ -82,7 +82,7 @@ public class CardActions(InvocationContext invocationContext) : TrelloActions(in
     }
 
     [Action("Get card", Description = "Get specific card details")]
-    public async Task<GetCardResponse> GetCard([ActionParameter] CardRequest input)
+    public static async Task<GetCardResponse> GetCard([ActionParameter] CardRequest input)
     {
         var card = new Card(input.CardId);
         await card.Refresh();
