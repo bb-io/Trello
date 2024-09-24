@@ -74,21 +74,22 @@ public class CardActions(InvocationContext invocationContext) : TrelloActions(in
         await board.Cards.Refresh();
         if (input.Name != null)
         {
-            try
+            if (board.Cards.Any(x => x.Name == input.Name))
             {
                 var card = board.Cards.FirstOrDefault(x => x.Name == input.Name);
                 return new(card);
             }
-            catch { return null; }
+            else { return null; }
+             
         }
         if (input.Url != null) 
         {
-            try
+            if (board.Cards.Any(x => x.Url == input.Url))
             {
                 var card = board.Cards.FirstOrDefault(x => x.Url == input.Url);
                 return new(card);
             }
-            catch { return null; }
+            else { return null; }
         }
         return null;
     }
