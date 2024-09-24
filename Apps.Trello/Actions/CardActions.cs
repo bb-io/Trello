@@ -72,13 +72,26 @@ public class CardActions(InvocationContext invocationContext) : TrelloActions(in
         }
         var board = await GetBoardData(input.BoardId);
         await board.Cards.Refresh();
-        var card = String.IsNullOrEmpty(input.Name) ? 
-            String.IsNullOrEmpty(input.Url) ?
-            throw new Exception("Either card name or url need to be specified") 
-            : board.Cards.FirstOrDefault(x => x.Url == input.Url) 
-            : board.Cards.FirstOrDefault(x => x.Name == input.Name);
-        
-        return new(card);
+        if (input.Name != null)
+        {
+            if (board.Cards.Any(x => x.Name == input.Name))
+            {
+                var card = board.Cards.FirstOrDefault(x => x.Name == input.Name);
+                return new(card);
+            }
+            else { return null; }
+             
+        }
+        if (input.Url != null) 
+        {
+            if (board.Cards.Any(x => x.Url == input.Url))
+            {
+                var card = board.Cards.FirstOrDefault(x => x.Url == input.Url);
+                return new(card);
+            }
+            else { return null; }
+        }
+        return null;
     }
 
     [Action("Get card", Description = "Get specific card details")]

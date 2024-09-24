@@ -62,7 +62,11 @@ namespace Apps.Trello.Actions
             var card = new Card(input.CardId);
             await card.Refresh();
 
-            return new(card.CheckLists.FirstOrDefault(x => x.Name == checklistName ));
+            if (card.CheckLists.Any(x => x.Name == checklistName))
+            {
+                return new(card.CheckLists.FirstOrDefault(x => x.Name == checklistName));
+            }
+            else { return null; }
         }
     }
 }
