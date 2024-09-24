@@ -81,18 +81,18 @@ public class CardActions(InvocationContext invocationContext) : TrelloActions(in
         return new(card);
     }
 
-    //[Action("Get card", Description = "Get specific card details")]
-    //public async Task<GetCardResponse> GetCard([ActionParameter] CardRequest input)
-    //{
-    //    var card = new Card(input.CardId);
-    //    await card.Refresh();
-    //    await card.List.Refresh();
-    //    await card.Attachments.Refresh();
-    //    await card.Comments.Refresh();
-    //    await card.CheckLists.Refresh();
-        
-    //    return new GetCardResponse(card);
-    //}
+    [Action("Get card", Description = "Get specific card details")]
+    public async Task<GetCardResponse> GetCard([ActionParameter] CardRequest input)
+    {
+        var card = new Card(input.CardId);
+        await card.Refresh();
+        await card.List.Refresh();
+        await card.Attachments.Refresh();
+        await card.Comments.Refresh();
+        await card.CheckLists.Refresh();
+
+        return new GetCardResponse(card);
+    }
 
     [Action("Copy card", Description = "Creates a new card based on another one")]
     public async Task<CardEntity> CopyCard([ActionParameter] ListRequest list, [ActionParameter] CopyCardRequest input)

@@ -1,4 +1,5 @@
-﻿using Blackbird.Applications.Sdk.Common;
+﻿using Apps.Trello.Models.Entities;
+using Blackbird.Applications.Sdk.Common;
 using Manatee.Trello;
 
 namespace Apps.Trello.Models.Responses.Card
@@ -13,11 +14,11 @@ namespace Apps.Trello.Models.Responses.Card
         [Display("Card name")]
         public string Name { get; set; }
 
-        public List<ICheckList> Checklists { get; set; }
+        public List<ChecklistEntity> Checklists { get; set; }
 
         public List<string> Comments { get; set; }
 
-        public List<IAttachment> Attachments { get; set; }
+        public List<cardAttachment> Attachments { get; set; }
 
         [Display("List name")]
         public string ListName { get; set; }
@@ -40,9 +41,9 @@ namespace Apps.Trello.Models.Responses.Card
             ID = card.Id; 
             Url = card.Url;
             Name = card.Name;
-            Checklists = card.CheckLists is null ? new List<ICheckList>() : card.CheckLists.ToList();
+            Checklists = card.CheckLists is null ? new List<ChecklistEntity>() : card.CheckLists.Select(c => new ChecklistEntity(c)).ToList();
             Comments = card.Comments is null ? new List<string>() : card.Comments.Select(x => x.Data.Text).ToList();
-            Attachments = card.Attachments is null ? new List<IAttachment>() : card.Attachments.ToList();
+            Attachments = card.Attachments is null ? new List<cardAttachment>() : card.Attachments.Select(a => new cardAttachment(a)).ToList();
             Position = (int)card.Position;
             ListName = card.List.Name;
             ListID = card.List.Id;
@@ -51,5 +52,33 @@ namespace Apps.Trello.Models.Responses.Card
             LastActivity = DateTime.Now;
         }
 
+    }
+
+    public class cardAttachment
+    {
+        [Display("Attachment ID")]
+        public string attachmentID { get; set; }
+
+        [Display("Attachment name")]
+        public string attachmentName { get; set; }
+
+        [Display("Attachment type")]
+        public string attachmentType { get; set; }
+
+        [Display("Attachment date")]
+        public DateTime attachmentDate { get; set; }
+
+        [Display("Attachment link")]
+        public string attachmentLink { get; set; }
+
+        public cardAttachment(IAttachment attachment) 
+        {
+            attachmentID = attachment.Id;
+            attachmentName = attachment.Name;
+            attachmentType = (bool)attachment.IsUpload  ? "file" : "link";
+            attachmentDate = attachment.CreationDate;
+            attachmentLink = attachment.Url;
+
+        }
     }
 }

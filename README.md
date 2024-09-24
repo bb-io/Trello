@@ -73,7 +73,8 @@ To get your Api key and user token:
 
 - **Get card checklist**  Gets a specific checklist from a card
 - **List card checklists**  Lists all checklists in a card
-- **Search checklist item**  Gets a specific checklist item from a card
+- **Find card checklist**  Gets the first checklist from a card that amtches the provided name
+- **Find checklist item**  Gets a specific checklist item from a card
 - **Update checklist item**  Update checklist item
 
 ### Custom Fields
