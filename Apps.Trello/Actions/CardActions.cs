@@ -59,7 +59,7 @@ public class CardActions(InvocationContext invocationContext) : TrelloActions(in
         if (input.ActivityDateTo != null)
         { cards = cards.Where(x => x.LastActivity <= input.ActivityDateTo).ToList(); }
 
-        return new(cards);
+        return cards;
     }
 
     [Action("Find card", Description = "Find a card by name or url")]
@@ -90,8 +90,8 @@ public class CardActions(InvocationContext invocationContext) : TrelloActions(in
         await card.Attachments.Refresh();
         await card.Comments.Refresh();
         await card.CheckLists.Refresh();
-        
-        return new(card);
+
+        return new GetCardResponse(card);
     }
 
     [Action("Copy card", Description = "Creates a new card based on another one")]

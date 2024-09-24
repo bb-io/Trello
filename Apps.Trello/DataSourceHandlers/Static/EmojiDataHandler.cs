@@ -1,16 +1,4 @@
-﻿using Apps.Trello.Invocables;
-using Apps.Trello.Models.Requests.Card;
-using Blackbird.Applications.Sdk.Common.Dynamic;
-using Blackbird.Applications.Sdk.Common.Invocation;
-using Blackbird.Applications.Sdk.Common;
-using Manatee.Trello;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Blackbird.Applications.Sdk.Common.Dictionaries;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+﻿using Blackbird.Applications.Sdk.Common.Dictionaries;
 
 namespace Apps.Trello.DataSourceHandlers.Static
 {
