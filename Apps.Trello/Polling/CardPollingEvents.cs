@@ -17,36 +17,28 @@ public class CardPollingEvents(InvocationContext invocationContext) : TrelloActi
         [PollingEventParameter] BoardCardsFilterRequest filterRequest,
         [PollingEventParameter] CardsCommentAddedFilterRequest commentFilterRequest)
     {
-        try
+        if (request.Memory is null)
         {
-            if (request.Memory is null)
-            {
-                return new()
-                {
-                    FlyBird = false,
-                    Memory = new()
-                    {
-                        LastInteractionDate = DateTime.UtcNow
-                    }
-                };
-            }
-
-            var result = await GetCards(filterRequest, commentFilterRequest, request.Memory.LastInteractionDate);
             return new()
             {
-                FlyBird = result.CardComments.Any(),
-                Result = result,
+                FlyBird = false,
                 Memory = new()
                 {
                     LastInteractionDate = DateTime.UtcNow
                 }
             };
         }
-        catch (Exception e)
+
+        var result = await GetCards(filterRequest, commentFilterRequest, request.Memory.LastInteractionDate);
+        return new()
         {
-            await WebhookLogger.LogAsync(e);
-            throw;
-        }
+            FlyBird = result.CardComments.Any(),
+            Result = result,
+            Memory = new()
+            {
+                LastInteractionDate = DateTime.UtcNow
+            }
+        };
     }
     
     private async Task<CardsCommentsResponse> GetCards(BoardCardsFilterRequest filterRequest, 
@@ -57,24 +49,12 @@ public class CardPollingEvents(InvocationContext invocationContext) : TrelloActi
         board.Cards.Limit = filterRequest.Limit ?? 100;
         await board.Cards.Refresh();
         
-        await WebhookLogger.LogAsync(new
-        {
-            cards = board.Cards.Select(c => new { c.Id, c.Name }),
-        });
-        
         var comments = new List<CardCommentResponse>();
         foreach (var card in board.Cards)
         {
             card.Comments.Limit = filterRequest.Limit ?? 100;
             card.Comments.Filter(lastInteractionDate, DateTime.UtcNow);
             await card.Comments.Refresh();
-            
-            await WebhookLogger.LogAsync(new
-            {
-                cardId = card.Id,
-                comments = card.Comments.Select(c => new { c.Id, c.Data, c.Data.Text }),
-                lastInteractionDate
-            });
             
             comments.AddRange(card.Comments.Select(c => new CardCommentResponse(c)));
         }
