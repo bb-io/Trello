@@ -28,6 +28,12 @@ public class CardPollingEvents
                     }
                 };
             }
+            
+            await WebhookLogger.LogAsync(new
+            {
+                filterRequest,
+                lastInteractionDate = request.Memory.LastInteractionDate
+            });
 
             var result = await GetCards(filterRequest, request.Memory.LastInteractionDate);
             return new()
