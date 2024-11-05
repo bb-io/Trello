@@ -1,14 +1,17 @@
-﻿using Apps.Trello.Models.Entities;
+﻿using Apps.Trello.Actions.Base;
+using Apps.Trello.Invocables;
+using Apps.Trello.Models.Entities;
 using Apps.Trello.Models.Requests.Card;
 using Apps.Trello.Polling.Models;
 using Apps.Trello.Polling.Models.Response;
+using Blackbird.Applications.Sdk.Common.Invocation;
 using Blackbird.Applications.Sdk.Common.Polling;
 using Manatee.Trello;
 
 namespace Apps.Trello.Polling;
 
 [PollingEventList]
-public class CardPollingEvents
+public class CardPollingEvents(InvocationContext invocationContext) : TrelloActions(invocationContext)
 {
     [PollingEvent("On cards comments added", Description = "Polling event. Triggered after specified time interval and returns new comments")]
     public async Task<PollingEventResponse<DateMemory, CardsCommentsResponse>> OnCardsCommentsAdded(
@@ -86,13 +89,5 @@ public class CardPollingEvents
         {
             CardComments = comments
         };
-    }
-    
-    private async Task<Board> GetBoardData(string boardId)
-    {
-        var board = new Board(boardId);
-        await board.Refresh();
-        
-        return board;
     }
 }
