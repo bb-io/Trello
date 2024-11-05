@@ -6,7 +6,7 @@ namespace Apps.Trello.Models.Requests.Board;
 
 public class BoardRequest
 {
-    [Display("Board")]
+    [Display("Board ID")]
     [DataSource(typeof(BoardDataHandler))]
     public string BoardId { get; set; }
 }

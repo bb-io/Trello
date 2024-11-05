@@ -1,4 +1,5 @@
-﻿using Apps.Trello.Models.Requests.Card;
+﻿using Apps.Trello.Models.Entities;
+using Apps.Trello.Models.Requests.Card;
 using Apps.Trello.Polling.Models;
 using Apps.Trello.Polling.Models.Response;
 using Blackbird.Applications.Sdk.Common.Polling;
@@ -54,7 +55,8 @@ public class CardPollingEvents
         
         await WebhookLogger.LogAsync(new
         {
-            cards = board.Cards.Select(c => new { c.Id, c.Name })
+            cards = board.Cards.Select(c => new { c.Id, c.Name }),
+            dtos = board.Cards.Select(c => new CardEntity(c)).ToArray()
         });
         
         var comments = new List<CardCommentResponse>();
