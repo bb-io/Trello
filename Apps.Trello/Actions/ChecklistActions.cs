@@ -47,12 +47,26 @@ namespace Apps.Trello.Actions
             return new(item);
         }
 
-        [Action("Search checklist item", Description = "Gets a specific checklist item from a card")]
+        [Action("Find checklist item", Description = "Gets a specific checklist item from a card")]
         public async Task<CheckitemEntity> SearchItem([ActionParameter] CardRequest card, [ActionParameter] SearchItemRequest input)
         {
             var chk = new CheckList(input.ChecklistID);
             await chk.Refresh();
             return new CheckitemEntity(chk.CheckItems.First(x => x.Name == input.ItemName));
+        }
+
+        [Action("Find checklist", Description = "Gets the first matching checklist in a card")]
+        public async Task<ChecklistEntity> FindCardChecklists([ActionParameter] CardRequest input,
+            [Display("Checklist name")][ActionParameter] string checklistName )
+        {
+            var card = new Card(input.CardId);
+            await card.Refresh();
+
+            if (card.CheckLists.Any(x => x.Name == checklistName))
+            {
+                return new(card.CheckLists.FirstOrDefault(x => x.Name == checklistName));
+            }
+            else { return null; }
         }
     }
 }
