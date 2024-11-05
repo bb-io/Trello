@@ -12,8 +12,8 @@ public class CardPollingEvents
 {
     [PollingEvent("On cards comments added", Description = "Polling event. Triggered after specified time interval and returns new comments")]
     public async Task<PollingEventResponse<DateMemory, CardsCommentsResponse>> OnCardsCommentsAdded(
-        [PollingEventParameter] BoardCardsFilterRequest filterRequest,
-        PollingEventRequest<DateMemory> request)
+        PollingEventRequest<DateMemory> request,
+        [PollingEventParameter] BoardCardsFilterRequest filterRequest)
     {
         try
         {
