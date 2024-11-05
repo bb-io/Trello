@@ -10,5 +10,5 @@ public class CardCommentResponse(IAction action)
     public string Text { get; set; } = action.Data.Text;
 
     [Display("Card")]
-    public CardEntity Card { get; set; } = new CardEntity(action.Data.Card);
+    public CardEntity Card { get; set; } = new(action.Data.Card);
 }

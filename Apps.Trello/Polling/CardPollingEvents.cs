@@ -1,12 +1,10 @@
 ﻿using Apps.Trello.Actions.Base;
-using Apps.Trello.Invocables;
-using Apps.Trello.Models.Entities;
 using Apps.Trello.Models.Requests.Card;
 using Apps.Trello.Polling.Models;
+using Apps.Trello.Polling.Models.Request;
 using Apps.Trello.Polling.Models.Response;
 using Blackbird.Applications.Sdk.Common.Invocation;
 using Blackbird.Applications.Sdk.Common.Polling;
-using Manatee.Trello;
 
 namespace Apps.Trello.Polling;
 
@@ -16,7 +14,8 @@ public class CardPollingEvents(InvocationContext invocationContext) : TrelloActi
     [PollingEvent("On cards comments added", Description = "Polling event. Triggered after specified time interval and returns new comments")]
     public async Task<PollingEventResponse<DateMemory, CardsCommentsResponse>> OnCardsCommentsAdded(
         PollingEventRequest<DateMemory> request,
-        [PollingEventParameter] BoardCardsFilterRequest filterRequest)
+        [PollingEventParameter] BoardCardsFilterRequest filterRequest,
+        [PollingEventParameter] CardsCommentAddedFilterRequest commentFilterRequest)
     {
         try
         {
@@ -31,14 +30,8 @@ public class CardPollingEvents(InvocationContext invocationContext) : TrelloActi
                     }
                 };
             }
-            
-            await WebhookLogger.LogAsync(new
-            {
-                filterRequest,
-                lastInteractionDate = request.Memory.LastInteractionDate
-            });
 
-            var result = await GetCards(filterRequest, request.Memory.LastInteractionDate);
+            var result = await GetCards(filterRequest, commentFilterRequest, request.Memory.LastInteractionDate);
             return new()
             {
                 FlyBird = result.CardComments.Any(),
@@ -56,7 +49,9 @@ public class CardPollingEvents(InvocationContext invocationContext) : TrelloActi
         }
     }
     
-    private async Task<CardsCommentsResponse> GetCards(BoardCardsFilterRequest filterRequest, DateTime lastInteractionDate)
+    private async Task<CardsCommentsResponse> GetCards(BoardCardsFilterRequest filterRequest, 
+        CardsCommentAddedFilterRequest commentFilterRequest, 
+        DateTime lastInteractionDate)
     {
         var board = await GetBoardData(filterRequest.BoardId);
         board.Cards.Limit = filterRequest.Limit ?? 100;
@@ -65,7 +60,6 @@ public class CardPollingEvents(InvocationContext invocationContext) : TrelloActi
         await WebhookLogger.LogAsync(new
         {
             cards = board.Cards.Select(c => new { c.Id, c.Name }),
-            dtos = board.Cards.Select(c => new CardEntity(c)).ToArray()
         });
         
         var comments = new List<CardCommentResponse>();
@@ -83,6 +77,13 @@ public class CardPollingEvents(InvocationContext invocationContext) : TrelloActi
             });
             
             comments.AddRange(card.Comments.Select(c => new CardCommentResponse(c)));
+        }
+
+        if (!string.IsNullOrEmpty(commentFilterRequest.ContainsText))
+        {
+            comments = comments
+                .Where(c => c.Text.Contains(commentFilterRequest.ContainsText, StringComparison.OrdinalIgnoreCase))
+                .ToList();
         }
         
         return new()

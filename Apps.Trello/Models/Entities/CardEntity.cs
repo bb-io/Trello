@@ -33,10 +33,10 @@ public class CardEntity
         Description = card.Description;
         CreationDate = DateTime.SpecifyKind(card.CreationDate, DateTimeKind.Local);
         LastActivity = card.LastActivity;
-        Position = card.Position.ToString();
+        Position = card.Position?.ToString() ?? string.Empty;
         Url = card.Url;
-        ListName = card.List.Name;
-        Lists = card.CheckLists.Select(x => new ChecklistEntity(x));
+        ListName = card.List?.Name ?? string.Empty;
+        Lists = card.CheckLists?.Select(x => new ChecklistEntity(x)) ?? Enumerable.Empty<ChecklistEntity>();
     }
 
     public CardEntity(CardDto cardDto)
