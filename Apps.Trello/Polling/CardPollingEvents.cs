@@ -14,29 +14,36 @@ public class CardPollingEvents
         [PollingEventParameter] BoardCardsFilterRequest filterRequest,
         PollingEventRequest<DateMemory> request)
     {
-        if (request.Memory is null)
+        try
         {
+            if (request.Memory is null)
+            {
+                return new()
+                {
+                    FlyBird = false,
+                    Memory = new()
+                    {
+                        LastInteractionDate = DateTime.UtcNow
+                    }
+                };
+            }
+
+            var result = await GetCards(filterRequest, request.Memory.LastInteractionDate);
             return new()
             {
-                FlyBird = false,
+                FlyBird = result.CardComments.Any(),
+                Result = result,
                 Memory = new()
                 {
                     LastInteractionDate = DateTime.UtcNow
                 }
             };
         }
-
-        var result = await GetCards(filterRequest, request.Memory.LastInteractionDate);
-
-        return new()
+        catch (Exception e)
         {
-            FlyBird = result.CardComments.Any(),
-            Result = result,
-            Memory = new()
-            {
-                LastInteractionDate = DateTime.UtcNow
-            }
-        };
+            await WebhookLogger.LogAsync(e);
+            throw;
+        }
     }
     
     private async Task<CardsCommentsResponse> GetCards(BoardCardsFilterRequest filterRequest, DateTime lastInteractionDate)
@@ -45,12 +52,24 @@ public class CardPollingEvents
         board.Cards.Limit = filterRequest.Limit ?? 100;
         await board.Cards.Refresh();
         
+        await WebhookLogger.LogAsync(new
+        {
+            cards = board.Cards.Select(c => new { c.Id, c.Name })
+        });
+        
         var comments = new List<CardCommentResponse>();
         foreach (var card in board.Cards)
         {
             card.Comments.Limit = filterRequest.Limit ?? 100;
             card.Comments.Filter(lastInteractionDate, DateTime.UtcNow);
             await card.Comments.Refresh();
+            
+            await WebhookLogger.LogAsync(new
+            {
+                cardId = card.Id,
+                comments = card.Comments.Select(c => new { c.Id, c.Data, c.Data.Text }),
+                lastInteractionDate
+            });
             
             comments.AddRange(card.Comments.Select(c => new CardCommentResponse(c)));
         }
