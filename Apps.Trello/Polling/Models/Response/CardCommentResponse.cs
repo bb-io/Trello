@@ -11,4 +11,7 @@ public class CardCommentResponse(IAction action)
 
     [Display("Card")]
     public CardEntity Card { get; set; } = new(action.Data.Card);
+
+    [Display("Board ID")]
+    public string BoardId { get; set; } = string.Empty;
 }
