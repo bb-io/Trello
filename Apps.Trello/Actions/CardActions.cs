@@ -73,12 +73,17 @@ public class CardActions(InvocationContext invocationContext) : TrelloActions(in
     [Action("Find card", Description = "Find a card by name or url")]
     public async Task<CardEntity> FindCard([ActionParameter] FindCardRequest input)
     {
-        
         if (String.IsNullOrEmpty(input.Name) && String.IsNullOrEmpty(input.Url))
         {
             throw new Exception("Either card name or url need to be specified");
         }
+        
         var board = await GetBoardData(input.BoardId);
+        if(input.CreatedDateFrom.HasValue && input.CreatedDateTo.HasValue)
+        {
+            board.Cards.Filter(input.CreatedDateFrom.Value, input.CreatedDateTo.Value);
+        }
+        
         await board.Cards.Refresh();
         if (input.Name != null)
         {

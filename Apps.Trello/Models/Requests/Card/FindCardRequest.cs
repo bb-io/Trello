@@ -10,5 +10,11 @@ namespace Apps.Trello.Models.Requests.Card
 
         [Display("Card url")]
         public string? Url { get; set; }
+
+        [Display("Created date from")]
+        public DateTime? CreatedDateFrom { get; set; }
+
+        [Display("Created date to")]
+        public DateTime? CreatedDateTo { get; set; }
     }
 }
