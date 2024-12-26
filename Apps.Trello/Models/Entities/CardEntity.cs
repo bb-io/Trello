@@ -51,4 +51,10 @@ public class CardEntity
         ListName = cardDto.ListName;
         Lists = cardDto.CheckLists.Select(x => new ChecklistEntity(x));
     }
+
+    public CardEntity()
+    {
+        Id = null!;
+        Name = null!;
+    }
 }
