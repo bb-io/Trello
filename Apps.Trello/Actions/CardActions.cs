@@ -41,15 +41,23 @@ public class CardActions(InvocationContext invocationContext) : TrelloActions(in
     public async Task<List<CardEntity>> SearchCards([ActionParameter] SearchCardsRequest input)
     {
         var board = await GetBoardData(input.BoardId);
+
+        var filterApplied = false;
+        if (input.CreatedDateFrom.HasValue && input.CreatedDateTo.HasValue)
+        {
+            board.Cards.Filter(input.CreatedDateFrom.Value, input.CreatedDateTo.Value);
+            filterApplied = true;
+        }
+        
         await board.Cards.Refresh();
         var cards = board.Cards.Select(c => new CardEntity(c)).ToList();
         if (!String.IsNullOrEmpty(input.Name))
         { cards = cards.Where(x => x.Name == input.Name).ToList(); }
         if (!String.IsNullOrEmpty(input.Description))
         { cards = cards.Where(x => x.Description.Contains(input.Description)).ToList(); }
-        if (input.CreatedDateFrom != null)
+        if (input.CreatedDateFrom != null && !filterApplied)
         { cards = cards.Where(x => x.CreationDate >= input.CreatedDateFrom).ToList(); }
-        if (input.CreatedDateTo != null)
+        if (input.CreatedDateTo != null && !filterApplied)
         { cards = cards.Where(x => x.CreationDate <= input.CreatedDateTo).ToList(); }
         if (input.ActivityDateFrom != null)
         { cards = cards.Where(x => x.LastActivity >= input.ActivityDateFrom).ToList(); }
@@ -67,7 +75,7 @@ public class CardActions(InvocationContext invocationContext) : TrelloActions(in
             throw new Exception("Either card name or url need to be specified");
         }
         
-        var cards = await RestClient.PaginateCardsAsync(input.BoardId);
+        var cards = await RestClient.PaginateCardsAsync(input.BoardId, input.CreatedDateFrom, input.CreatedDateTo);
         if (input.Name != null || input.Url != null)
         {
             foreach (var cardEntity in cards)

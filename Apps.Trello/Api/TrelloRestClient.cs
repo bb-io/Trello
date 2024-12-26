@@ -17,12 +17,24 @@ public class TrelloRestClient(List<AuthenticationCredentialsProvider> credential
         return new PluginApplicationException(response.Content!);
     }
 
-    public async Task<List<CardEntity>> PaginateCardsAsync(string boardId)
+    public async Task<List<CardEntity>> PaginateCardsAsync(string boardId, DateTime? startDate, DateTime? endDate)
     {
         const int limit = 10000;
         var cardsRequest = new TrelloRestRequest($"/boards/{boardId}/cards", Method.Get, credentialsProviders)
             .AddParameter("limit", limit, ParameterType.QueryString)
             .AddParameter("fields", "id,name,url", ParameterType.QueryString);
+
+        if (startDate.HasValue)
+        {
+            cardsRequest = cardsRequest.AddParameter("since", startDate.Value.ToUniversalTime().ToString("o"),
+                ParameterType.QueryString);
+        }
+        
+        if (endDate.HasValue)
+        {
+            cardsRequest = cardsRequest.AddParameter("before", endDate.Value.ToUniversalTime().ToString("o"),
+                ParameterType.QueryString);
+        }
 
         var allCards = new List<CardEntity>();
         do
