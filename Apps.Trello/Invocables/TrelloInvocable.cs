@@ -1,4 +1,5 @@
-﻿using Apps.Trello.Constants;
+﻿using Apps.Trello.Api;
+using Apps.Trello.Constants;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Authentication;
 using Blackbird.Applications.Sdk.Common.Invocation;
@@ -14,9 +15,12 @@ public class TrelloInvocable : BaseInvocable
     
     protected TrelloFactory Client { get; }
     
+    protected TrelloRestClient RestClient { get; }
+    
     protected TrelloInvocable(InvocationContext invocationContext) : base(invocationContext)
     {
         Client = new();
+        RestClient = new TrelloRestClient(InvocationContext.AuthenticationCredentialsProviders.ToList());
         
         TrelloAuthorization.Default.AppKey = Creds.Get(CredsNames.ApiKey).Value;
         TrelloAuthorization.Default.UserToken = Creds.Get(CredsNames.UserToken).Value;

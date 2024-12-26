@@ -1,15 +1,12 @@
 ﻿using Apps.Trello.Actions.Base;
 using Apps.Trello.Models.Entities;
-using Apps.Trello.Models.Requests.Board;
 using Apps.Trello.Models.Requests.Card;
 using Apps.Trello.Models.Requests.List;
 using Apps.Trello.Models.Responses.Card;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
 using Blackbird.Applications.Sdk.Common.Invocation;
-using Blackbird.Applications.Sdk.Utils.Extensions.System;
 using Manatee.Trello;
-using System.Collections.Generic;
 
 namespace Apps.Trello.Actions;
 
@@ -65,33 +62,45 @@ public class CardActions(InvocationContext invocationContext) : TrelloActions(in
     [Action("Find card", Description = "Find a card by name or url")]
     public async Task<CardEntity> FindCard([ActionParameter] FindCardRequest input)
     {
-        
         if (String.IsNullOrEmpty(input.Name) && String.IsNullOrEmpty(input.Url))
         {
             throw new Exception("Either card name or url need to be specified");
         }
-        var board = await GetBoardData(input.BoardId);
-        await board.Cards.Refresh();
-        if (input.Name != null)
+        
+        var cards = await RestClient.PaginateCardsAsync(input.BoardId);
+        if (input.Name != null || input.Url != null)
         {
-            if (board.Cards.Any(x => x.Name == input.Name))
+            foreach (var cardEntity in cards)
             {
-                var card = board.Cards.FirstOrDefault(x => x.Name == input.Name);
-                return new(card);
+                if (input.Name != null && cardEntity.Name == input.Name)
+                {
+                    var card = new Card(cardEntity.Id);
+                    await card.Refresh();
+                    await card.List.Refresh();
+                    await card.Attachments.Refresh();
+                    await card.Comments.Refresh();
+                    await card.CheckLists.Refresh();
+
+                    return new CardEntity(card);
+                }
+
+                if (input.Url != null && cardEntity.Url == input.Url)
+                {
+                    var card = new Card(cardEntity.Id);
+                    await card.Refresh();
+                    await card.List.Refresh();
+                    await card.Attachments.Refresh();
+                    await card.Comments.Refresh();
+                    await card.CheckLists.Refresh();
+
+                    return new CardEntity(card);
+                }
             }
-            else { return null; }
-             
+
+            return new();
         }
-        if (input.Url != null) 
-        {
-            if (board.Cards.Any(x => x.Url == input.Url))
-            {
-                var card = board.Cards.FirstOrDefault(x => x.Url == input.Url);
-                return new(card);
-            }
-            else { return null; }
-        }
-        return null;
+        
+        return new();
     }
 
     [Action("Get card", Description = "Get specific card details")]
