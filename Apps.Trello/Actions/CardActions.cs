@@ -5,6 +5,7 @@ using Apps.Trello.Models.Requests.List;
 using Apps.Trello.Models.Responses.Card;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
+using Blackbird.Applications.Sdk.Common.Exceptions;
 using Blackbird.Applications.Sdk.Common.Invocation;
 using Manatee.Trello;
 
@@ -161,32 +162,43 @@ public class CardActions(InvocationContext invocationContext) : TrelloActions(in
         [ActionParameter] ListCardRequest card,
         [ActionParameter] UpdateCardRequest input)
     {
-        var result = new Card(card.CardId)
+        try
         {
-            Name = input.Name,
-            Description = input.Description,
-            IsComplete = input.IsComplete,
-            IsArchived = input.IsArchived,
-            DueDate = input.DueDate            
-        };
+            var result = new Card(card.CardId)
+            {
+                Name = input.Name,
+                Description = input.Description,
+                IsComplete = input.IsComplete,
+                IsArchived = input.IsArchived,
+                DueDate = input.DueDate
+            };
 
-        if (!String.IsNullOrEmpty(input.Comment)) 
-        {
-            await result.Comments.Add(input.Comment);
+            if (!String.IsNullOrEmpty(input.Comment))
+            {
+                await result.Comments.Add(input.Comment);
+            }
+
+
+
+            if (card.ListId is not null)
+            {
+                var list = new List(card.ListId);
+                await list.Refresh();
+
+                result.List = list;
+            }
+
+            await result.Refresh();
+            return new(result);
         }
-        
-        
-
-        if (card.ListId is not null)
+        catch (InvalidOperationException ex)
         {
-            var list = new List(card.ListId);
-            await list.Refresh();
-            
-            result.List = list;
+            throw new PluginApplicationException("Error occured while updating card", ex);
         }
-
-        await result.Refresh();
-        return new(result);
+        catch (Exception ex)
+        {
+            throw new PluginApplicationException(ex.Message);
+        }
     }
     
     [Action("Delete card", Description = "Delete specific card")]
