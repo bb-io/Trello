@@ -19,7 +19,7 @@ namespace Apps.Trello.Models.Requests.Card
         [Display("File")]
         public FileReference? File { get; set; }
 
-        [Display("Mime type (if file)")]
+        [Display("Mime type")]
         public string? MimeType { get; set; }
 
         [Display("Set as cover?")]
