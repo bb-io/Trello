@@ -7,12 +7,14 @@ using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
 using Blackbird.Applications.Sdk.Common.Exceptions;
 using Blackbird.Applications.Sdk.Common.Invocation;
+using Blackbird.Applications.SDK.Extensions.FileManagement.Interfaces;
 using Manatee.Trello;
 
 namespace Apps.Trello.Actions;
 
+
 [ActionList]
-public class CardActions(InvocationContext invocationContext) : TrelloActions(invocationContext)
+public class CardActions(InvocationContext invocationContext, IFileManagementClient _fileManagementClient) : TrelloActions(invocationContext)
 {
     [Action("List cards", Description = "List all board cards")]
     public async Task<ListCardsResponse> ListCards([ActionParameter] BoardCardsFilterRequest input)
@@ -156,7 +158,46 @@ public class CardActions(InvocationContext invocationContext) : TrelloActions(in
 
         return new(card);
     }
-    
+
+
+    [Action("Add attachment to card", Description = "Add an attachment (file or URL) to a card")]
+    public async Task<AddAttachmentResponse> AddAttachmentToCard([ActionParameter] AddAttachmentRequest input)
+    {
+        var card = new Card(input.CardId);
+        await card.Refresh();
+
+        IAttachment? attachment;
+
+        if (!string.IsNullOrEmpty(input.Url))
+        {
+            attachment = await card.Attachments.Add(input.Url, input.Name);
+        }
+        else if (input.File != null)
+        {
+            using var fileStream = await _fileManagementClient.DownloadAsync(input.File);
+
+            var fileName = !string.IsNullOrEmpty(input.Name)
+                ? input.Name
+                : (input.File.Name ?? "Attachment");
+
+            byte[] fileData;
+            using (var ms = new MemoryStream())
+            {
+                await fileStream.CopyToAsync(ms);
+                fileData = ms.ToArray();
+            }
+
+            attachment = await card.Attachments.Add(fileData, fileName);
+        }
+        else
+        {
+            throw new PluginMisconfigurationException("Either 'Url' or 'File' must be provided to add an attachment. Please check your input and try again");
+        }
+
+        return new AddAttachmentResponse(attachment);
+    }
+
+
     [Action("Update card", Description = "Update specific card")]
     public async Task<CardEntity> UpdateCard(
         [ActionParameter] ListCardRequest card,
