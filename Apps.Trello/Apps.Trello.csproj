@@ -4,7 +4,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Product>Trello</Product>
-    <Version>1.1.20</Version>
+    <Version>1.1.21</Version>
     <Description>Kanban-style lists</Description>
     <AssemblyName>Apps.Trello</AssemblyName>
   </PropertyGroup>
