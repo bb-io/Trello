@@ -5,6 +5,7 @@ using Apps.Trello.Models.Requests.Checklist;
 using Apps.Trello.Models.Responses.Checklist;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
+using Blackbird.Applications.Sdk.Common.Exceptions;
 using Blackbird.Applications.Sdk.Common.Invocation;
 using Manatee.Trello;
 
@@ -39,8 +40,20 @@ namespace Apps.Trello.Actions
         {
             var card = new Card(input.CardId);
             await card.Refresh();
-            var checklist = card.CheckLists.First(x => iteminfo.ChecklistID == x.Id);
-            var item = checklist.CheckItems.First(x => iteminfo.CheckItemID == x.Id);
+            var checklist = card.CheckLists.FirstOrDefault(x => iteminfo.ChecklistID == x.Id);
+
+            if (checklist == null)
+            {
+                throw new PluginMisconfigurationException("Checklist with the specified ID was not found. Please check your input and try again");
+            }
+
+            var item = checklist.CheckItems.FirstOrDefault(x => iteminfo.CheckItemID == x.Id);
+
+            if (item == null)
+            {
+                throw new PluginMisconfigurationException("Check item with the specified ID was not found. Please check your input and try again");
+            }
+
             item.State = iteminfo.State == "Complete" ? CheckItemState.Complete : CheckItemState.Incomplete;
             item.Name = String.IsNullOrEmpty(iteminfo.Name) ? item.Name : iteminfo.Name ;
             await item.Refresh();
