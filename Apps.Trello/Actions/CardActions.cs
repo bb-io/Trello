@@ -150,6 +150,11 @@ public class CardActions(InvocationContext invocationContext, IFileManagementCli
         [ActionParameter] ListRequest list,
         [ActionParameter] CreateCardRequest input)
     {
+
+        if (!string.IsNullOrEmpty(input.CardDescription) && input.CardDescription.Length > 15000)
+        {
+            throw new PluginMisconfigurationException("Card description must not exceed 15000 characters. Please check the input description.");
+        }
         var board = await GetBoardData(list.BoardId);
         await board.Lists.Refresh();
 

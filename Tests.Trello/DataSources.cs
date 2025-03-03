@@ -1,5 +1,6 @@
 ﻿using Apps.Trello.Actions;
 using Apps.Trello.Models.Requests.Card;
+using Apps.Trello.Models.Requests.List;
 using TrelloTests.Base;
 
 namespace Tests.Trello
@@ -23,5 +24,30 @@ namespace Tests.Trello
 
             Assert.IsNotNull(response);
         }
+
+
+
+        [TestMethod]
+        public async Task CreateCardReturnsValues()
+        {
+            var action = new CardActions(InvocationContext, FileManager);
+
+
+            var card = new CreateCardRequest
+            {
+                CardName = "RE: Introduction to Machine Translation Post-Editing",
+                CardDescription = "Description"
+            };
+            var list = new ListRequest
+            {
+                BoardId= "6620e3459331613297aa5221",
+                ListId = "6620e3459331613297aa5228",
+
+            };
+            var response = await action.CreateCard(list,card);
+
+            Assert.IsNotNull(response);
+        }
     }
 }
+
