@@ -3,6 +3,7 @@ using Apps.Trello.Models.Entities;
 using Apps.Trello.Models.Requests.Card;
 using Apps.Trello.Models.Requests.Checklist;
 using Apps.Trello.Models.Responses.Checklist;
+using Apps.Trello.Utils;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
 using Blackbird.Applications.Sdk.Common.Exceptions;
@@ -22,7 +23,7 @@ namespace Apps.Trello.Actions
         public async Task<GetChecklistsResponse> GetCardChecklists([ActionParameter] CardRequest input)
         {
             var card = new Card(input.CardId);
-            await card.Refresh();
+            await ExecuteWithWrapper.ExecuteRefreshWithWrapper(() => card.Refresh());
             return new GetChecklistsResponse { Checklists = card.CheckLists.Select(x => new ChecklistEntity(x)) };
         }
 
@@ -30,7 +31,7 @@ namespace Apps.Trello.Actions
         public async Task<ChecklistEntity> GetCardChecklist([ActionParameter] CardRequest card, [ActionParameter] GetChecklistRequest input)
         {
             var chk =new CheckList(input.ChecklistID);
-            await chk.Refresh();
+            await ExecuteWithWrapper.ExecuteRefreshWithWrapper(() => chk.Refresh());
             return new ChecklistEntity(chk);
         }
 
@@ -39,7 +40,7 @@ namespace Apps.Trello.Actions
             [ActionParameter] UpdateChecklistItemRequest iteminfo)
         {
             var card = new Card(input.CardId);
-            await card.Refresh();
+            await ExecuteWithWrapper.ExecuteRefreshWithWrapper(() => card.Refresh());
             var checklist = card.CheckLists.FirstOrDefault(x => iteminfo.ChecklistID == x.Id);
 
             if (checklist == null)
@@ -64,7 +65,7 @@ namespace Apps.Trello.Actions
         public async Task<CheckitemEntity> SearchItem([ActionParameter] CardRequest card, [ActionParameter] SearchItemRequest input)
         {
             var chk = new CheckList(input.ChecklistID);
-            await chk.Refresh();
+            await ExecuteWithWrapper.ExecuteRefreshWithWrapper(() => chk.Refresh());
             return new CheckitemEntity(chk.CheckItems.First(x => x.Name == input.ItemName));
         }
 
@@ -73,7 +74,7 @@ namespace Apps.Trello.Actions
             [Display("Checklist name")][ActionParameter] string checklistName )
         {
             var card = new Card(input.CardId);
-            await card.Refresh();
+            await ExecuteWithWrapper.ExecuteRefreshWithWrapper(() => card.Refresh());
 
             if (card.CheckLists.Any(x => x.Name == checklistName))
             {
