@@ -1,7 +1,12 @@
-﻿using Apps.Trello.Webhooks.Handlers.Cards;
+﻿using System.Net;
+using Apps.Trello.Webhooks.Handlers.Base;
+using Apps.Trello.Webhooks.Handlers.Cards;
+using Apps.Trello.Webhooks.Models;
+using Apps.Trello.Webhooks.Models.Response;
 using Apps.Trello.Webhooks.Models.Response.Card;
 using Apps.Trello.Webhooks.WebhookLists.Base;
 using Blackbird.Applications.Sdk.Common.Webhooks;
+using Newtonsoft.Json;
 
 namespace Apps.Trello.Webhooks.WebhookLists;
 
@@ -16,10 +21,47 @@ public class CardWebhooks : TrelloWebhookList
     public Task<WebhookResponse<CardRenamedWebhookResponse>> OnCardRenamed(WebhookRequest request)
         => HandleWebhook<CardRenamedWebhookResponse>(request);
     
+    //
     [Webhook("On card moved to list", typeof(CardMovedToListHandler), Description = "On a specific card moved to another list")]
-    public Task<WebhookResponse<CardMovedToListWebhookResponse>> OnCardMovedToList(WebhookRequest request)
-        => HandleWebhook<CardMovedToListWebhookResponse>(request);
-    
+    public async Task<WebhookResponse<CardMovedToListWebhookResponse>> OnCardMovedToList(WebhookRequest request, [WebhookParameter] CardOptionFilter filter)
+    {
+        var payload = request.Body.ToString();
+        ArgumentException.ThrowIfNullOrEmpty(payload);
+
+        var data = JsonConvert.DeserializeObject<TrelloWebhookResponse<CardMovedToListWebhookResponse>>(payload)
+              ?? throw new Exception("Cannot process webhook data");
+
+        if (!string.IsNullOrEmpty(filter.CardId) && data.Action.Data.Card.CardId != filter.CardId)
+        {
+            return new WebhookResponse<CardMovedToListWebhookResponse>
+            {
+                HttpResponseMessage = new HttpResponseMessage(HttpStatusCode.OK),
+                ReceivedWebhookRequestType = WebhookRequestType.Preflight
+            };
+        }
+
+        if (!string.IsNullOrEmpty(filter.OldListId) && data.Action.Data.ListBefore.ListId != filter.OldListId)
+        {
+            return new WebhookResponse<CardMovedToListWebhookResponse>
+            {
+                HttpResponseMessage = new HttpResponseMessage(HttpStatusCode.OK),
+                ReceivedWebhookRequestType = WebhookRequestType.Preflight
+            };
+        }
+
+        if (!string.IsNullOrEmpty(filter.NewListId) && data.Action.Data.ListAfter.ListId != filter.NewListId)
+        {
+            return new WebhookResponse<CardMovedToListWebhookResponse>
+            {
+                HttpResponseMessage = new HttpResponseMessage(HttpStatusCode.OK),
+                ReceivedWebhookRequestType = WebhookRequestType.Preflight
+            };
+        }
+        return await HandleWebhook<CardMovedToListWebhookResponse>(request);
+
+    }
+    //
+
     [Webhook("On card comment added", typeof(CardCommentAddedHandler), Description = "On a specific card comment added")]
     public Task<WebhookResponse<CardCommentAddedWebhookResponse>> OnCardCommentAdded(WebhookRequest request)
         => HandleWebhook<CardCommentAddedWebhookResponse>(request);
