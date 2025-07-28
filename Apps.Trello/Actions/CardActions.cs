@@ -130,18 +130,30 @@ public class CardActions(InvocationContext invocationContext, IFileManagementCli
     [Action("Copy card", Description = "Creates a new card based on another one")]
     public async Task<CardEntity> CopyCard([ActionParameter] ListRequest list, [ActionParameter] CopyCardRequest input)
     {
-        var card = new Card(input.CardId);
-        await card.Refresh();
-        await card.List.Refresh();
+        if (string.IsNullOrWhiteSpace(input.CardId))
+        {
+            throw new PluginApplicationException("Card ID cannot be empty.");
+        }
 
-        var board = await GetBoardData(list.BoardId);
-        await board.Lists.Refresh();
+        try
+        {
+            var cardResponse = await GetCard(new CardRequest { CardId = input.CardId });
 
-        var CopyOptions = input.GetCopyOptions();
+            var card = cardResponse;
 
-        var newcard = await board.Lists.First(l => l.Id == list.ListId).Cards.Add(card, CopyOptions);
+            var board = await GetBoardData(list.BoardId);
+            await board.Lists.Refresh();
 
-        return new(newcard);
+            var copyOptions = input.GetCopyOptions();
+
+            var newCard = await board.Lists.First(l => l.Id == list.ListId).Cards.Add(new Card(card.ID), copyOptions);
+
+            return new CardEntity(newCard);
+        }
+        catch (Exception ex)
+        {
+            throw new PluginApplicationException($"Failed to copy card. Invalid Card ID or unable to access card: {input.CardId}. Error: {ex.Message}", ex);
+        }
     }
 
 
