@@ -168,6 +168,16 @@ public class CardActions(InvocationContext invocationContext, IFileManagementCli
     [Action("Add attachment to card", Description = "Add an attachment (file or URL) to a card")]
     public async Task<AddAttachmentResponse> AddAttachmentToCard([ActionParameter] AddAttachmentRequest input)
     {
+        if (string.IsNullOrWhiteSpace(input.CardId))
+        {
+            throw new PluginMisconfigurationException("Card ID cannot be empty or null. Please check the input and try again");
+        }
+
+        if (string.IsNullOrWhiteSpace(input.BoardId))
+        {
+            throw new PluginMisconfigurationException("Board ID cannot be empty or null. Please check the input and try again");
+        }
+
         var card = new Card(input.CardId);
         await card.Refresh();
 
