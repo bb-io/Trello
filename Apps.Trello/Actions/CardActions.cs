@@ -132,7 +132,7 @@ public class CardActions(InvocationContext invocationContext, IFileManagementCli
     {
         if (string.IsNullOrWhiteSpace(input.CardId))
         {
-            throw new ArgumentException("Card ID cannot be empty.");
+            throw new PluginApplicationException("Card ID cannot be empty.");
         }
 
         try
@@ -152,7 +152,7 @@ public class CardActions(InvocationContext invocationContext, IFileManagementCli
         }
         catch (Exception ex)
         {
-            throw new ArgumentException($"Failed to copy card. Invalid Card ID or unable to access card: {input.CardId}. Error: {ex.Message}", ex);
+            throw new PluginApplicationException($"Failed to copy card. Invalid Card ID or unable to access card: {input.CardId}. Error: {ex.Message}", ex);
         }
     }
 
