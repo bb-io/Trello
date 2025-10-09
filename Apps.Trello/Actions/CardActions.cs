@@ -12,8 +12,7 @@ using Manatee.Trello;
 
 namespace Apps.Trello.Actions;
 
-
-[ActionList]
+[ActionList("Cards")]
 public class CardActions(InvocationContext invocationContext, IFileManagementClient _fileManagementClient) : TrelloActions(invocationContext)
 {
     [Action("List cards", Description = "List all board cards")]
@@ -156,7 +155,6 @@ public class CardActions(InvocationContext invocationContext, IFileManagementCli
         }
     }
 
-
     [Action("Create card", Description = "Create card on board")]
     public async Task<CardEntity> CreateCard(
         [ActionParameter] ListRequest list,
@@ -175,7 +173,6 @@ public class CardActions(InvocationContext invocationContext, IFileManagementCli
 
         return new(card);
     }
-
 
     [Action("Add attachment to card", Description = "Add an attachment (file or URL) to a card")]
     public async Task<AddAttachmentResponse> AddAttachmentToCard([ActionParameter] AddAttachmentRequest input)
@@ -223,7 +220,6 @@ public class CardActions(InvocationContext invocationContext, IFileManagementCli
 
         return new AddAttachmentResponse(attachment);
     }
-
 
     [Action("Update card", Description = "Update specific card")]
     public async Task<CardEntity> UpdateCard(

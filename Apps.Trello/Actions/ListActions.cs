@@ -10,13 +10,9 @@ using Manatee.Trello;
 
 namespace Apps.Trello.Actions;
 
-[ActionList]
-public class ListActions : TrelloActions
+[ActionList("Lists")]
+public class ListActions(InvocationContext invocationContext) : TrelloActions(invocationContext)
 {
-    public ListActions(InvocationContext invocationContext) : base(invocationContext)
-    {
-    }
-
     [Action("Get lists", Description = "Get all board lists")]
     public async Task<GetAllListsResponse> GetBoardLists([ActionParameter] BoardRequest input)
     {
