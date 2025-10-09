@@ -4,12 +4,12 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Product>Trello</Product>
-    <Version>1.1.26</Version>
+    <Version>1.1.27</Version>
     <Description>Kanban-style lists</Description>
     <AssemblyName>Apps.Trello</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Blackbird.Applications.Sdk.Common" Version="2.11.0" />
+	<PackageReference Include="Blackbird.Applications.Sdk.Blueprints" Version="1.0.0-rc.10308" />
     <PackageReference Include="Blackbird.Applications.Sdk.Utils" Version="1.0.25" />
     <PackageReference Include="Manatee.Trello" Version="4.4.3" />
   </ItemGroup>

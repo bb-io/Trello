@@ -4,12 +4,8 @@ using Manatee.Trello;
 
 namespace Apps.Trello.Actions.Base;
 
-public class TrelloActions : TrelloInvocable
-{
-    protected TrelloActions(InvocationContext invocationContext) : base(invocationContext)
-    {
-    }
-    
+public class TrelloActions(InvocationContext invocationContext) : TrelloInvocable(invocationContext)
+{    
     protected async Task<Board> GetBoardData(string boardId)
     {
         var board = new Board(boardId);
