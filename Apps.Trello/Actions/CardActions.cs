@@ -74,7 +74,7 @@ public class CardActions(InvocationContext invocationContext, IFileManagementCli
     {
         if (String.IsNullOrEmpty(input.Name) && String.IsNullOrEmpty(input.Url))
         {
-            throw new Exception("Either card name or url need to be specified");
+            throw new PluginApplicationException("Either card name or url need to be specified");
         }
         
         var cards = await RestClient.PaginateCardsAsync(input.BoardId, input.CreatedDateFrom, input.CreatedDateTo);

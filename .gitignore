@@ -355,3 +355,4 @@ healthchecksdb
 *.dmg
 *.env
 /Tests.Trello/appsettings.json
+/Tests.Trello/appsettings.json
