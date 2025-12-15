@@ -30,6 +30,21 @@ namespace Tests.Trello
             };
             var response = await action.UpdateChecklistItem(input, iteminfo);
             Assert.IsNotNull(response);
-        }  
+        }
+        //FindCard
+
+        [TestMethod]
+        public async Task FindCard_IsSuccess()
+        {
+            var action = new CardActions(InvocationContext, FileManager);
+            var input = new FindCardRequest
+            {
+                BoardId = "5176af831f22073e1e0012e3",
+                Name = "KOD_26-06Thirty-Six-Years-of-Raising-the-Ruins-SF3468_EN-ES"
+            };
+            var response = await action.FindCard(input);
+            Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(response));
+            Assert.IsNotNull(response);
+        }
     }
 }

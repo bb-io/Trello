@@ -3,6 +3,7 @@ using Blackbird.Applications.Sdk.Common.Authentication;
 using Blackbird.Applications.Sdk.Common.Exceptions;
 using Blackbird.Applications.Sdk.Utils.RestSharp;
 using RestSharp;
+using System.Net;
 
 namespace Apps.Trello.Api;
 
@@ -14,7 +15,23 @@ public class TrelloRestClient(List<AuthenticationCredentialsProvider> credential
 {
     protected override Exception ConfigureErrorException(RestResponse response)
     {
-        return new PluginApplicationException(response.Content!);
+        var content = response.Content ?? string.Empty;
+
+        if (response.StatusCode == HttpStatusCode.Unauthorized &&
+            content.Contains("invalid key", StringComparison.OrdinalIgnoreCase))
+        {
+            return new PluginMisconfigurationException(
+                "Trello connection is invalid (invalid key). Please reconnect Trello app.");
+        }
+
+        if (response.StatusCode == HttpStatusCode.Unauthorized &&
+            content.Contains("invalid token", StringComparison.OrdinalIgnoreCase))
+        {
+            return new PluginMisconfigurationException(
+                "Trello connection is invalid (invalid token). Please reconnect Trello app.");
+        }
+
+        return new PluginApplicationException(content);
     }
 
     public async Task<List<CardEntity>> PaginateCardsAsync(string boardId, DateTime? startDate, DateTime? endDate)
