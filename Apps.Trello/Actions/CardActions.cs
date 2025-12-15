@@ -3,6 +3,7 @@ using Apps.Trello.Models.Entities;
 using Apps.Trello.Models.Requests.Card;
 using Apps.Trello.Models.Requests.List;
 using Apps.Trello.Models.Responses.Card;
+using Apps.Trello.Utils;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
 using Blackbird.Applications.Sdk.Common.Exceptions;
@@ -85,11 +86,11 @@ public class CardActions(InvocationContext invocationContext, IFileManagementCli
                 if (input.Name != null && cardEntity.Name == input.Name)
                 {
                     var card = new Card(cardEntity.Id);
-                    await card.Refresh();
-                    await card.List.Refresh();
-                    await card.Attachments.Refresh();
-                    await card.Comments.Refresh();
-                    await card.CheckLists.Refresh();
+                    await ExecuteWithWrapper.ExecuteRefreshWithWrapper(() => card.Refresh());
+                    await ExecuteWithWrapper.ExecuteRefreshWithWrapper(() => card.List.Refresh());
+                    await ExecuteWithWrapper.ExecuteRefreshWithWrapper(() => card.Attachments.Refresh());
+                    await ExecuteWithWrapper.ExecuteRefreshWithWrapper(() => card.Comments.Refresh());
+                    await ExecuteWithWrapper.ExecuteRefreshWithWrapper(() => card.CheckLists.Refresh());
 
                     return new CardEntity(card);
                 }
@@ -97,11 +98,11 @@ public class CardActions(InvocationContext invocationContext, IFileManagementCli
                 if (input.Url != null && cardEntity.Url == input.Url)
                 {
                     var card = new Card(cardEntity.Id);
-                    await card.Refresh();
-                    await card.List.Refresh();
-                    await card.Attachments.Refresh();
-                    await card.Comments.Refresh();
-                    await card.CheckLists.Refresh();
+                    await ExecuteWithWrapper.ExecuteRefreshWithWrapper(() => card.Refresh());
+                    await ExecuteWithWrapper.ExecuteRefreshWithWrapper(() => card.List.Refresh());
+                    await ExecuteWithWrapper.ExecuteRefreshWithWrapper(() => card.Attachments.Refresh());
+                    await ExecuteWithWrapper.ExecuteRefreshWithWrapper(() => card.Comments.Refresh());
+                    await ExecuteWithWrapper.ExecuteRefreshWithWrapper(() => card.CheckLists.Refresh());
 
                     return new CardEntity(card);
                 }
