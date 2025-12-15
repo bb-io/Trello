@@ -21,14 +21,14 @@ public class TrelloRestClient(List<AuthenticationCredentialsProvider> credential
             content.Contains("invalid key", StringComparison.OrdinalIgnoreCase))
         {
             return new PluginMisconfigurationException(
-                "Trello connection is invalid (invalid key). Please reconnect Trello.");
+                "Trello connection is invalid (invalid key). Please reconnect Trello app.");
         }
 
         if (response.StatusCode == HttpStatusCode.Unauthorized &&
             content.Contains("invalid token", StringComparison.OrdinalIgnoreCase))
         {
             return new PluginMisconfigurationException(
-                "Trello connection is invalid (invalid token). Please reconnect Trello.");
+                "Trello connection is invalid (invalid token). Please reconnect Trello app.");
         }
 
         return new PluginApplicationException(content);
