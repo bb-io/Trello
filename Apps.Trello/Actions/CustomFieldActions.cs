@@ -5,6 +5,7 @@ using Apps.Trello.Models.Requests.CustomField;
 using Apps.Trello.Models.Responses.CustomField;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
+using Blackbird.Applications.Sdk.Common.Exceptions;
 using Blackbird.Applications.Sdk.Common.Invocation;
 using Manatee.Trello;
 using System.Text.RegularExpressions;
@@ -21,7 +22,16 @@ public class CustomFieldActions(InvocationContext invocationContext) : TrelloAct
         await card.Refresh();
         await card.Board.CustomFields.Refresh();
 
-        var updateField = await card.CustomFields.FirstOrDefault(x => x.Definition.Id == CustomField.CustomFieldId).Definition.SetValueForCard(card,CustomField.Text);
+        var customField = card.Board.CustomFields.FirstOrDefault(x => x.Id == CustomField.CustomFieldId);
+        if (customField is null)
+        {
+            throw new PluginMisconfigurationException(
+                $"Custom field with ID '{CustomField.CustomFieldId}' was not found on the board containing card '{input.CardId}'. " +
+                "The field may have been deleted, or the card may belong to a different board. " +
+                "Please verify the Card ID and Custom field ID.");
+        }
+
+        var updateField = await customField.SetValueForCard(card, CustomField.Text);
         await card.Refresh();
 
         return new(updateField);
